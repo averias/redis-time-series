@@ -29,7 +29,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await rtsClient.reset("multirange1", "multirange2", "multirange3");
+    await rtsClient.delete("multirange1", "multirange2", "multirange3");
 });
 
 test("sum aggregated query multi range with label1 filter successfully", async () => {

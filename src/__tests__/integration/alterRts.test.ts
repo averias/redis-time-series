@@ -11,7 +11,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await rtsClient.reset("alter1");
+    await rtsClient.delete("alter1");
 });
 
 test("alter labels successfully", async () => {

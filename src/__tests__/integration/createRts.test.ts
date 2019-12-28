@@ -7,7 +7,7 @@ const factory = new RedisTimeSeriesFactory(testOptions);
 const rtsClient = factory.create();
 
 afterAll(async () => {
-    await rtsClient.reset("create1", "create2", "create3", "create4", "create5");
+    await rtsClient.delete("create1", "create2", "create3", "create4", "create5");
 });
 
 test("create time series successfully", async () => {

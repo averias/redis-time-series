@@ -13,7 +13,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await rtsClient.reset("get1");
+    await rtsClient.delete("get1");
 });
 
 test("get last value successfully", async () => {

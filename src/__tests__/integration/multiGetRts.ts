@@ -26,7 +26,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await rtsClient.reset("multiget1", "multiget2", "multiget3");
+    await rtsClient.delete("multiget1", "multiget2", "multiget3");
 });
 
 test("query multi get with label1 filter successfully", async () => {

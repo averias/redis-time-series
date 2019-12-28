@@ -12,7 +12,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await rtsClient.reset("change1", "change2", "change3");
+    await rtsClient.delete("change1", "change2", "change3");
 });
 
 test("increment successfully", async () => {

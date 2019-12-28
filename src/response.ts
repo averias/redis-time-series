@@ -119,7 +119,7 @@ class InfoRender {
         };
 
         if (this.response[11]) {
-            info["sourcekey"] = this.response[11];
+            info["sourceKey"] = this.response[11];
         }
 
         return info;

@@ -18,6 +18,6 @@ export class Label {
     }
 
     public flatten(): StringNumberArray {
-        return [this.name, this.value];
+        return [this.getName(), this.getValue()];
     }
 }

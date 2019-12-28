@@ -100,7 +100,7 @@ class TimeSeriesCommand implements Command {
     }
 }
 
-class ResetCommand implements Command {
+class DeleteCommand implements Command {
     protected readonly receiver: Redis.Redis;
     protected readonly keys: string[];
 
@@ -114,7 +114,7 @@ class ResetCommand implements Command {
     }
 }
 
-class ResetAllCommand implements Command {
+class DeleteAllCommand implements Command {
     protected readonly receiver: Redis.Redis;
 
     constructor(receiver: Redis.Redis) {
@@ -132,6 +132,6 @@ export {
     CommandReceiver,
     TimeSeriesCommand,
     CommandData,
-    ResetCommand,
-    ResetAllCommand
+    DeleteCommand,
+    DeleteAllCommand
 };

@@ -17,7 +17,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await rtsClient.reset("range1");
+    await rtsClient.delete("range1");
 });
 
 test("average aggregated query full range successfully", async () => {

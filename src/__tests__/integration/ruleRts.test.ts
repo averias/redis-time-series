@@ -15,7 +15,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await rtsClient.reset("rule1", "rule2");
+    await rtsClient.delete("rule1", "rule2");
 });
 
 test("create rule successfully", async () => {
@@ -53,4 +53,11 @@ test("create rule with non existent source key fails", async () => {
 
 test("delete rule with non existent source key fails", async () => {
     await expect(rtsClient.deleteRule("rule3", "rule2")).rejects.toThrow();
+});
+
+test("create rule with same source and destination key fails", async () => {
+    const aggregation = new Aggregation(AggregationType.COUNT, 50000);
+    await expect(rtsClient.createRule("rule1", "rule1", aggregation)).rejects.toThrow(
+        /source and destination key cannot be equals/
+    );
 });

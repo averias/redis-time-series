@@ -10,8 +10,8 @@ import {
     CommandInvoker,
     CommandProvider,
     CommandReceiver,
-    ResetAllCommand,
-    ResetCommand,
+    DeleteCommand,
+    DeleteAllCommand,
     TimeSeriesCommand
 } from "./command";
 import { RequestParamsDirector, StringNumberArray } from "./request";
@@ -153,14 +153,27 @@ export class RedisTimeSeries {
         return await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
     }
 
-    public async reset(...keys: string[]): Promise<boolean> {
-        const response = await this.invoker.setCommand(new ResetCommand(this.provider.getClient(), keys)).run();
+    public async delete(...keys: string[]): Promise<boolean> {
+        const response = await this.invoker.setCommand(new DeleteCommand(this.provider.getClient(), keys)).run();
         return response === 1;
     }
 
-    public async resetAll(): Promise<boolean> {
-        await this.invoker.setCommand(new ResetAllCommand(this.provider.getClient())).run();
+    public async deleteAll(): Promise<boolean> {
+        await this.invoker.setCommand(new DeleteAllCommand(this.provider.getClient())).run();
         return true;
+    }
+
+    public async reset(key: string, labels?: Label[], retention?: number): Promise<boolean> {
+        const deleted = await this.invoker.setCommand(new DeleteCommand(this.provider.getClient(), [key])).run();
+        if (deleted !== 1) {
+            throw new Error(`redis time series with key ${key} could not be deleted`);
+        }
+
+        const params: StringNumberArray = this.director.create(key, labels, retention).get();
+        const commandData: CommandData = this.provider.getCommandData(CommandEnum.CREATE, params);
+        const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
+
+        return response === "OK";
     }
 
     protected async changeBy(

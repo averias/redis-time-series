@@ -11,7 +11,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await rtsClient.reset("add1", "add2", "add3", "add4", "add5");
+    await rtsClient.delete("add1", "add2", "add3", "add4", "add5");
 });
 
 test("append values successfully", async () => {
