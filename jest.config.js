@@ -13,6 +13,4 @@ module.exports = {
         }
     },
     coverageReporters: ["json", "lcov", "text", "clover"]
-    // preset: 'ts-jest',
-    // testEnvironment: 'node',
 };

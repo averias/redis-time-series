@@ -191,9 +191,9 @@ class RequestParamsDirector {
     ): RequestParamsBuilder {
         return this.paramsBuilder
             .addRange(range)
-            .addFiltersWithKeyword(filters)
             .addCount(count)
-            .addAggregation(aggregation);
+            .addAggregation(aggregation)
+            .addFiltersWithKeyword(filters);
     }
 
     public getKey(key: string): RequestParamsBuilder {
@@ -206,10 +206,6 @@ class RequestParamsDirector {
 
     public queryIndex(filters: FilterBuilder): RequestParamsBuilder {
         return this.paramsBuilder.addFilters(filters);
-    }
-
-    public reset(key: string): RequestParamsBuilder {
-        return this.paramsBuilder.addKey(key);
     }
 }
 

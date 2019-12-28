@@ -50,7 +50,8 @@ class MultiRangeResponseRender {
             }
             const samples: Sample[] = [];
             for (const sample of bucket[2]) {
-                samples.push(new Sample(key, sample[1], sample[0]));
+                const sampleValue = Number(sample[1]);
+                samples.push(new Sample(key, isNaN(sampleValue) ? 0 : sampleValue, sample[0]));
             }
             ranges.push({
                 key: key,
@@ -78,7 +79,7 @@ class MultiGetResponseRender {
             for (const label of bucket[1]) {
                 labels.push(new Label(label[0], label[1]));
             }
-            const sample: Sample = new Sample(key, bucket[3], bucket[2]);
+            const sample: Sample = new Sample(key, Number(bucket[3]), bucket[2]);
             ranges.push({
                 key: key,
                 labels: labels,

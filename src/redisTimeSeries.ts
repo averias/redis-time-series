@@ -104,7 +104,7 @@ export class RedisTimeSeries {
 
         const samples: Sample[] = [];
         for (const sample of response) {
-            samples.push(new Sample(key, sample[1], sample[0]));
+            samples.push(new Sample(key, Number(sample[1]), sample[0]));
         }
 
         return samples;
@@ -128,7 +128,7 @@ export class RedisTimeSeries {
         const commandData: CommandData = this.provider.getCommandData(CommandEnum.GET, params);
         const sample = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
-        return new Sample(key, sample[1], sample[0]);
+        return new Sample(key, Number(sample[1]), sample[0]);
     }
 
     public async multiGet(filters: FilterBuilder): Promise<Array<MultiGetResponse>> {
@@ -153,8 +153,8 @@ export class RedisTimeSeries {
         return await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
     }
 
-    public async reset(key: string): Promise<boolean> {
-        const response = await this.invoker.setCommand(new ResetCommand(key, this.provider.getClient())).run();
+    public async reset(...keys: string[]): Promise<boolean> {
+        const response = await this.invoker.setCommand(new ResetCommand(this.provider.getClient(), keys)).run();
         return response === 1;
     }
 

@@ -40,12 +40,12 @@ class FilterBuilder {
         return this;
     }
 
-    public exists(label: string): FilterBuilder {
+    public notExists(label: string): FilterBuilder {
         this.filters.push(new Filter(label, FilterOperator.EQUAL));
         return this;
     }
 
-    public notExists(label: string): FilterBuilder {
+    public exists(label: string): FilterBuilder {
         this.filters.push(new Filter(label, FilterOperator.NOT_EQUAL));
         return this;
     }
@@ -55,7 +55,7 @@ class FilterBuilder {
         return this;
     }
 
-    public notIn(label: string, value: string | number): FilterBuilder {
+    public notIn(label: string, value: StringNumberArray): FilterBuilder {
         this.filters.push(new Filter(label, FilterOperator.NOT_EQUAL, value));
         return this;
     }

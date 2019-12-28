@@ -102,15 +102,15 @@ class TimeSeriesCommand implements Command {
 
 class ResetCommand implements Command {
     protected readonly receiver: Redis.Redis;
-    protected readonly key: string;
+    protected readonly keys: string[];
 
-    constructor(key: string, receiver: Redis.Redis) {
-        this.key = key;
+    constructor(receiver: Redis.Redis, keys: string[]) {
+        this.keys = keys;
         this.receiver = receiver;
     }
 
     public execute(): Promise<number> {
-        return this.receiver.del(this.key);
+        return this.receiver.del(...this.keys);
     }
 }
 

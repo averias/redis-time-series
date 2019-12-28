@@ -56,6 +56,6 @@ export class Sample {
     }
 
     protected isValidTimestamp(timestamp: string | number): boolean {
-        return typeof timestamp === "number" && new Date(timestamp).getTime() > 0;
+        return typeof timestamp === "number" && new Date(timestamp).getTime() >= 0;
     }
 }

@@ -34,7 +34,7 @@ export class TimestampRange {
 
     protected validateTimestamp(timestamp: string | number, defaultTimestamp: string): string | number {
         const valid =
-            (typeof timestamp === "number" && new Date(timestamp).getTime() > 0) ||
+            (typeof timestamp === "number" && new Date(timestamp).getTime() >= 0) ||
             (typeof timestamp === "string" && timestamp === defaultTimestamp);
 
         if (valid) {
