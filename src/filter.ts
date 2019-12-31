@@ -5,10 +5,11 @@ class Filter {
     private readonly label: string;
     private readonly operator: string;
     private readonly value?: string | number | StringNumberArray;
+    private readonly allowedOperator: string[] = [FilterOperator.EQUAL, FilterOperator.NOT_EQUAL];
 
     constructor(label: string, operator: string, value?: string | number | StringNumberArray) {
         this.label = label;
-        this.operator = operator;
+        this.operator = this.validateOperator(operator);
         this.value = value;
     }
 
@@ -19,6 +20,14 @@ class Filter {
         }
 
         return [`${this.label}${this.operator}${filterString}`];
+    }
+
+    protected validateOperator(operator: string): string {
+        if (!this.allowedOperator.includes(operator)) {
+            throw new Error(`not allowed operator ${operator}`);
+        }
+
+        return operator;
     }
 }
 

@@ -1,5 +1,5 @@
 import { RedisTimeSeriesFactory } from "../../factory";
-import { testOptions } from "../../__test_config__/data";
+import { testOptions } from "../../__tests_config__/data";
 import { Sample } from "../../sample";
 import { Aggregation } from "../../aggregation";
 import { AggregationType } from "../../enum";
@@ -15,21 +15,24 @@ const label1 = new Label("label", "1");
 const sensor1 = new Label("sensor", "1");
 const sensor2 = new Label("sensor", "2");
 const sensor3 = new Label("sensor", "3");
+const sensorString = new Label("sensor", "sensorvalue");
 
 beforeAll(async () => {
     await rtsClient.create("multirange1", [label1, sensor1]);
     await rtsClient.create("multirange2", [label1, sensor2]);
     await rtsClient.create("multirange3", [sensor2, sensor3]);
+    await rtsClient.create("multirange4", [sensorString]);
 
     for (let i = 0; i < 10; i++) {
         await rtsClient.add(new Sample("multirange1", 20 + i, date + i * 1000));
         await rtsClient.add(new Sample("multirange2", 30 + i, date + i * 1000));
         await rtsClient.add(new Sample("multirange3", 40 + i, date + i * 1000));
+        await rtsClient.add(new Sample("multirange4", 50 + i, date + i * 1000));
     }
 });
 
 afterAll(async () => {
-    await rtsClient.delete("multirange1", "multirange2", "multirange3");
+    await rtsClient.delete("multirange1", "multirange2", "multirange3", "multirange4");
 });
 
 test("sum aggregated query multi range with label1 filter successfully", async () => {
@@ -100,6 +103,31 @@ test("max aggregated query multi range with label1 and sensor1 filters successfu
     expect(multiRanges.length).toBe(0);
 });
 
+test("max aggregated query multi range with sensor string filter successfully", async () => {
+    const aggregation = new Aggregation(AggregationType.MAX, 5000);
+    const timestampRange = new TimestampRange(date, date + 10000);
+    const filter = new FilterBuilder("sensor", "sensorvalue");
+    const multiRanges = await rtsClient.multiRange(timestampRange, filter, undefined, aggregation);
+    expect(Array.isArray(multiRanges)).toBe(true);
+
+    const multiRange = multiRanges.shift();
+    expect(multiRange).not.toEqual(undefined);
+    // @ts-ignore
+    expect(multiRange.key).toEqual("multirange4");
+    // @ts-ignore
+    const labels = multiRange.labels;
+    expect(labels.shift()).toEqual(sensorString);
+
+    // @ts-ignore
+    const samples = multiRange.data;
+    // @ts-ignore
+    expect(samples.shift().getValue()).toEqual(54);
+    // @ts-ignore
+    expect(samples.shift().getValue()).toEqual(59);
+
+    expect(multiRanges.length).toBe(0);
+});
+
 test("min aggregated query multi range with not label1 ans sensor2 filters successfully", async () => {
     const aggregation = new Aggregation(AggregationType.MIN, 5000);
     const timestampRange = new TimestampRange(date, date + 10000);
@@ -166,6 +194,34 @@ test("aggregated query multi range with filter not matching", async () => {
     const filter = new FilterBuilder("sensor", 3).notIn("sensor", [1, 2]);
     const multiRanges = await rtsClient.multiRange(timestampRange, filter, undefined, aggregation);
     expect(Array.isArray(multiRanges)).toBe(true);
+    expect(multiRanges.length).toBe(0);
+});
+
+test("aggregated query multi range with default timestamp", async () => {
+    const timestampRange = new TimestampRange();
+    const filter = new FilterBuilder("sensor", 3).notEqual("label", 1);
+    const multiRanges = await rtsClient.multiRange(timestampRange, filter, 3);
+    expect(Array.isArray(multiRanges)).toBe(true);
+
+    const multiRange = multiRanges.shift();
+    expect(multiRange).not.toEqual(undefined);
+    // @ts-ignore
+    expect(multiRange.key).toEqual("multirange3");
+    // @ts-ignore
+    const labels = multiRange.labels;
+    expect(labels.shift()).toEqual(sensor2);
+    expect(labels.shift()).toEqual(sensor3);
+
+    // @ts-ignore
+    const samples = multiRange.data;
+    // @ts-ignore
+    expect(samples.shift().getValue()).toEqual(40);
+    // @ts-ignore
+    expect(samples.shift().getValue()).toEqual(41);
+    // @ts-ignore
+    expect(samples.shift().getValue()).toEqual(42);
+
+    expect(samples.length).toBe(0);
     expect(multiRanges.length).toBe(0);
 });
 

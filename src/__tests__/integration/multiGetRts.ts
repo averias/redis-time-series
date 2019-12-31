@@ -1,5 +1,5 @@
 import { RedisTimeSeriesFactory } from "../../factory";
-import { testOptions } from "../../__test_config__/data";
+import { testOptions } from "../../__tests_config__/data";
 import { Sample } from "../../sample";
 import { Label } from "../../label";
 import { FilterBuilder } from "../../filter";

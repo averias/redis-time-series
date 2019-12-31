@@ -1,5 +1,5 @@
 import { RedisTimeSeriesFactory } from "../../factory";
-import { testOptions } from "../../__test_config__/data";
+import { testOptions } from "../../__tests_config__/data";
 import { Sample } from "../../sample";
 import { Label } from "../../label";
 
@@ -11,7 +11,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await rtsClient.delete("add1", "add2", "add3", "add4", "add5");
+    await rtsClient.delete("add1", "add2", "add3", "add4", "add5", "add6");
 });
 
 test("append values successfully", async () => {
@@ -64,6 +64,13 @@ test("append with default timestamp", async () => {
     expect(added).toBeGreaterThanOrEqual(startTime);
     expect(added).toBeLessThanOrEqual(endTime);
     expect(sample.getTimestamp()).toEqual("*");
+});
+
+test("append with float timestamp, truncate it", async () => {
+    const almostNow = Date.now() - 1000.69;
+    const sample = new Sample("add6", 700, almostNow);
+    const added = await rtsClient.add(sample);
+    expect(added).toEqual(Math.trunc(almostNow));
 });
 
 test("multi add successfully", async () => {

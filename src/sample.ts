@@ -43,10 +43,12 @@ export class Sample {
         return [this.getKey(), this.getTimestamp(), this.getValue()];
     }
 
-    protected validateTimestamp(timestamp?: string | number): string | number {
+    protected validateTimestamp(timestamp?: number): string | number {
         if (timestamp == null) {
             return CommandKeyword.CURRENT_TIMESTAMP;
         }
+
+        timestamp = Math.trunc(timestamp);
 
         if (this.isValidTimestamp(timestamp)) {
             return timestamp;
@@ -55,7 +57,7 @@ export class Sample {
         throw new Error(`wrong timestamp: ${timestamp}`);
     }
 
-    protected isValidTimestamp(timestamp: string | number): boolean {
-        return typeof timestamp === "number" && new Date(timestamp).getTime() >= 0;
+    protected isValidTimestamp(timestamp: number): boolean {
+        return new Date(timestamp).getTime() >= 0;
     }
 }

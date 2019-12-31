@@ -23,7 +23,7 @@ class RequestParamsBuilder {
 
     public addKeys(sourceKey: string, destKey: string): RequestParamsBuilder {
         if (sourceKey === destKey) {
-            throw new Error(`source and destination key cannot be equals: ${sourceKey} 1= ${destKey}`);
+            throw new Error(`source and destination key cannot be equals: ${sourceKey} != ${destKey}`);
         }
         this.params.push(sourceKey, destKey);
 
