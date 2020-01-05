@@ -33,13 +33,14 @@ beforeAll(async () => {
 
 afterAll(async () => {
     await rtsClient.delete("multirange1", "multirange2", "multirange3", "multirange4");
+    await rtsClient.disconnect();
 });
 
 test("sum aggregated query multi range with label1 filter successfully", async () => {
     const aggregation = new Aggregation(AggregationType.SUM, 5000);
     const timestampRange = new TimestampRange(date, date + 10000);
     const filter = new FilterBuilder("label", 1);
-    const multiRanges = await rtsClient.multiRange(timestampRange, filter, undefined, aggregation);
+    const multiRanges = await rtsClient.multiRange(timestampRange, filter, undefined, aggregation, true);
     expect(Array.isArray(multiRanges)).toBe(true);
 
     const multiRange1 = multiRanges.shift();
@@ -81,7 +82,7 @@ test("max aggregated query multi range with label1 and sensor1 filters successfu
     const aggregation = new Aggregation(AggregationType.MAX, 5000);
     const timestampRange = new TimestampRange(date, date + 10000);
     const filter = new FilterBuilder("label", 1).equal("sensor", 1);
-    const multiRanges = await rtsClient.multiRange(timestampRange, filter, undefined, aggregation);
+    const multiRanges = await rtsClient.multiRange(timestampRange, filter, undefined, aggregation, true);
     expect(Array.isArray(multiRanges)).toBe(true);
 
     const multiRange = multiRanges.shift();
@@ -107,7 +108,7 @@ test("max aggregated query multi range with sensor string filter successfully", 
     const aggregation = new Aggregation(AggregationType.MAX, 5000);
     const timestampRange = new TimestampRange(date, date + 10000);
     const filter = new FilterBuilder("sensor", "sensorvalue");
-    const multiRanges = await rtsClient.multiRange(timestampRange, filter, undefined, aggregation);
+    const multiRanges = await rtsClient.multiRange(timestampRange, filter, undefined, aggregation, true);
     expect(Array.isArray(multiRanges)).toBe(true);
 
     const multiRange = multiRanges.shift();
@@ -132,7 +133,7 @@ test("min aggregated query multi range with not label1 ans sensor2 filters succe
     const aggregation = new Aggregation(AggregationType.MIN, 5000);
     const timestampRange = new TimestampRange(date, date + 10000);
     const filter = new FilterBuilder("sensor", 2).notEqual("label", 1);
-    const multiRanges = await rtsClient.multiRange(timestampRange, filter, undefined, aggregation);
+    const multiRanges = await rtsClient.multiRange(timestampRange, filter, undefined, aggregation, true);
     expect(Array.isArray(multiRanges)).toBe(true);
 
     const multiRange = multiRanges.shift();
@@ -167,7 +168,7 @@ test("max aggregated query multi range with sensor3 filter and count optional pa
     const aggregation = new Aggregation(AggregationType.MAX, 5000);
     const timestampRange = new TimestampRange(date, date + 10000);
     const filter = new FilterBuilder("sensor", 3).notEqual("label", 1);
-    const multiRanges = await rtsClient.multiRange(timestampRange, filter, 1, aggregation);
+    const multiRanges = await rtsClient.multiRange(timestampRange, filter, 1, aggregation, true);
     expect(Array.isArray(multiRanges)).toBe(true);
 
     const multiRange = multiRanges.shift();
@@ -192,12 +193,12 @@ test("aggregated query multi range with filter not matching", async () => {
     const aggregation = new Aggregation(AggregationType.COUNT, 5000);
     const timestampRange = new TimestampRange(date, date + 10000);
     const filter = new FilterBuilder("sensor", 3).notIn("sensor", [1, 2]);
-    const multiRanges = await rtsClient.multiRange(timestampRange, filter, undefined, aggregation);
+    const multiRanges = await rtsClient.multiRange(timestampRange, filter, undefined, aggregation, true);
     expect(Array.isArray(multiRanges)).toBe(true);
     expect(multiRanges.length).toBe(0);
 });
 
-test("aggregated query multi range with default timestamp", async () => {
+test("aggregated query multi range with default timestamp and without labels", async () => {
     const timestampRange = new TimestampRange();
     const filter = new FilterBuilder("sensor", 3).notEqual("label", 1);
     const multiRanges = await rtsClient.multiRange(timestampRange, filter, 3);
@@ -208,9 +209,7 @@ test("aggregated query multi range with default timestamp", async () => {
     // @ts-ignore
     expect(multiRange.key).toEqual("multirange3");
     // @ts-ignore
-    const labels = multiRange.labels;
-    expect(labels.shift()).toEqual(sensor2);
-    expect(labels.shift()).toEqual(sensor3);
+    expect(multiRange.labels.length).toBe(0);
 
     // @ts-ignore
     const samples = multiRange.data;
@@ -232,7 +231,7 @@ test("aggregated query multi range with timestamp range not matching", async () 
     for (const key in AggregationType) {
         const aggregationType = AggregationType[key];
         const aggregation = new Aggregation(aggregationType, 5000);
-        const multiRanges = await rtsClient.multiRange(timestampRange, filter, undefined, aggregation);
+        const multiRanges = await rtsClient.multiRange(timestampRange, filter, undefined, aggregation, true);
         expect(Array.isArray(multiRanges)).toBe(true);
 
         const multiRange1 = multiRanges.shift();

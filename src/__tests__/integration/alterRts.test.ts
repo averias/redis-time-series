@@ -12,6 +12,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
     await rtsClient.delete("alter1");
+    await rtsClient.disconnect();
 });
 
 test("alter labels successfully", async () => {

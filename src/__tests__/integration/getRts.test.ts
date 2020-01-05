@@ -14,6 +14,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
     await rtsClient.delete("get1");
+    await rtsClient.disconnect();
 });
 
 test("get last value successfully", async () => {

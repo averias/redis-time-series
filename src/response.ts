@@ -2,28 +2,27 @@ import { Label } from "./label";
 import { Sample } from "./sample";
 import { Aggregation } from "./aggregation";
 
+interface AggregationByKey {
+    [key: string]: Aggregation;
+}
+
 interface BaseMultiResponse {
     key: string;
     labels: Label[];
 }
 
 interface MultiRangeResponse extends BaseMultiResponse {
-    key: string;
-    labels: Label[];
     data: Sample[];
 }
 
 interface MultiGetResponse extends BaseMultiResponse {
-    key: string;
-    labels: Label[];
     data: Sample;
 }
 
-interface AggregationByKey {
-    [key: string]: Aggregation;
-}
-
-interface Info {
+interface InfoResponse {
+    totalSamples: number;
+    memoryUsage: number;
+    firstTimestamp: number;
     lastTimestamp: number;
     retentionTime: number;
     chunkCount: number;
@@ -34,15 +33,9 @@ interface Info {
 }
 
 class MultiRangeResponseRender {
-    protected response: any[];
-
-    constructor(response: any[]) {
-        this.response = response;
-    }
-
-    public render(): any[] {
+    public render(response: any[]): any[] {
         const ranges: MultiRangeResponse[] = [];
-        for (const bucket of this.response) {
+        for (const bucket of response) {
             const key = bucket[0];
             const labels: Label[] = [];
             for (const label of bucket[1]) {
@@ -65,15 +58,9 @@ class MultiRangeResponseRender {
 }
 
 class MultiGetResponseRender {
-    protected response: any[];
-
-    constructor(response: any[]) {
-        this.response = response;
-    }
-
-    public render(): any[] {
+    public render(response: any[]): any[] {
         const ranges: MultiGetResponse[] = [];
-        for (const bucket of this.response) {
+        for (const bucket of response) {
             const key = bucket[0];
             const labels: Label[] = [];
             for (const label of bucket[1]) {
@@ -91,35 +78,32 @@ class MultiGetResponseRender {
     }
 }
 
-class InfoRender {
-    protected response: any[];
-
-    constructor(response: any[]) {
-        this.response = response;
-    }
-
-    public render(): Info {
+class InfoResponseRender {
+    public render(response: any[]): InfoResponse {
         const labels: Label[] = [];
-        for (const label of this.response[9]) {
+        for (const label of response[15]) {
             labels.push(new Label(label[0], label[1]));
         }
 
         const rules: AggregationByKey = {};
-        for (const rule of this.response[13]) {
+        for (const rule of response[19]) {
             rules[rule[0]] = new Aggregation(rule[2], rule[1]);
         }
 
-        const info: Info = {
-            lastTimestamp: this.response[1],
-            retentionTime: this.response[3],
-            chunkCount: this.response[5],
-            maxSamplesPerChunk: this.response[7],
+        const info: InfoResponse = {
+            totalSamples: response[1],
+            memoryUsage: response[3],
+            firstTimestamp: response[5],
+            lastTimestamp: response[7],
+            retentionTime: response[9],
+            chunkCount: response[11],
+            maxSamplesPerChunk: response[13],
             labels: labels,
             rules: rules
         };
 
-        if (this.response[11]) {
-            info["sourceKey"] = this.response[11];
+        if (response[17]) {
+            info["sourceKey"] = response[17];
         }
 
         return info;
@@ -127,11 +111,11 @@ class InfoRender {
 }
 
 export {
+    AggregationByKey,
     MultiRangeResponse,
     MultiGetResponse,
-    AggregationByKey,
-    Info,
+    InfoResponse,
     MultiRangeResponseRender,
     MultiGetResponseRender,
-    InfoRender
+    InfoResponseRender
 };

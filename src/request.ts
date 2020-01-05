@@ -112,6 +112,22 @@ class RequestParamsBuilder {
         return this;
     }
 
+    public addWithLabels(withLabels?: boolean): RequestParamsBuilder {
+        if (withLabels != null && withLabels) {
+            this.params.push(CommandKeyword.WITHLABELS);
+        }
+
+        return this;
+    }
+
+    public addUncompressed(uncompressed?: boolean): RequestParamsBuilder {
+        if (uncompressed != null && uncompressed) {
+            this.params.push(CommandKeyword.UNCOMPRESSED);
+        }
+
+        return this;
+    }
+
     public reset(): RequestParamsBuilder {
         this.params = [];
         return this;
@@ -160,11 +176,17 @@ class RequestParamsDirector {
         return this.paramsBuilder.addSamples(samples);
     }
 
-    public changeBy(sample: Sample, labels?: Label[], retention?: number): RequestParamsBuilder {
+    public changeBy(
+        sample: Sample,
+        labels?: Label[],
+        retention?: number,
+        uncompressed?: boolean
+    ): RequestParamsBuilder {
         return this.paramsBuilder
             .addSampleWithOptionalTimeStamp(sample)
             .addRetention(retention)
-            .addLabels(labels);
+            .addLabels(labels)
+            .addUncompressed(uncompressed);
     }
 
     public createRule(sourceKey: string, destKey: string, aggregation: Aggregation): RequestParamsBuilder {
@@ -187,12 +209,14 @@ class RequestParamsDirector {
         range: TimestampRange,
         filters: FilterBuilder,
         count?: number,
-        aggregation?: Aggregation
+        aggregation?: Aggregation,
+        withLabels?: boolean
     ): RequestParamsBuilder {
         return this.paramsBuilder
             .addRange(range)
             .addCount(count)
             .addAggregation(aggregation)
+            .addWithLabels(withLabels)
             .addFiltersWithKeyword(filters);
     }
 

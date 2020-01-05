@@ -4,7 +4,7 @@ import { Sample } from "./sample";
 import { Aggregation } from "./aggregation";
 import { TimestampRange } from "./timestampRange";
 import { FilterBuilder } from "./filter";
-import { MultiGetResponse, MultiRangeResponse, Info } from "./response";
+import { MultiGetResponse, MultiRangeResponse, InfoResponse } from "./response";
 import {
     CommandData,
     CommandInvoker,
@@ -12,7 +12,8 @@ import {
     CommandReceiver,
     DeleteCommand,
     DeleteAllCommand,
-    TimeSeriesCommand
+    TimeSeriesCommand,
+    DisconnectCommand
 } from "./command";
 import { RequestParamsDirector, StringNumberArray } from "./request";
 import { RenderFactory } from "./factory";
@@ -68,12 +69,22 @@ export class RedisTimeSeries {
         return await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
     }
 
-    public async incrementBy(sample: Sample, labels?: Label[], retention?: number): Promise<boolean> {
-        return this.changeBy(CommandEnum.INCRBY, sample, labels, retention);
+    public async incrementBy(
+        sample: Sample,
+        labels?: Label[],
+        retention?: number,
+        uncompressed?: boolean
+    ): Promise<number> {
+        return this.changeBy(CommandEnum.INCRBY, sample, labels, retention, uncompressed);
     }
 
-    public async decrementBy(sample: Sample, labels?: Label[], retention?: number): Promise<boolean> {
-        return this.changeBy(CommandEnum.DECRBY, sample, labels, retention);
+    public async decrementBy(
+        sample: Sample,
+        labels?: Label[],
+        retention?: number,
+        uncompressed?: boolean
+    ): Promise<number> {
+        return this.changeBy(CommandEnum.DECRBY, sample, labels, retention, uncompressed);
     }
 
     public async createRule(sourceKey: string, destKey: string, aggregation: Aggregation): Promise<boolean> {
@@ -114,13 +125,16 @@ export class RedisTimeSeries {
         range: TimestampRange,
         filters: FilterBuilder,
         count?: number,
-        aggregation?: Aggregation
+        aggregation?: Aggregation,
+        withLabels?: boolean
     ): Promise<Array<MultiRangeResponse>> {
-        const params: StringNumberArray = this.director.multiRange(range, filters, count, aggregation).get();
+        const params: StringNumberArray = this.director
+            .multiRange(range, filters, count, aggregation, withLabels)
+            .get();
         const commandData: CommandData = this.provider.getCommandData(CommandEnum.MULTI_RANGE, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
-        return this.renderFactory.getMultiRangeResponse(response).render();
+        return this.renderFactory.getMultiRangeRender().render(response);
     }
 
     public async get(key: string): Promise<Sample> {
@@ -136,15 +150,15 @@ export class RedisTimeSeries {
         const commandData: CommandData = this.provider.getCommandData(CommandEnum.MULTI_GET, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
-        return this.renderFactory.getMultiGetResponse(response).render();
+        return this.renderFactory.getMultiGetRender().render(response);
     }
 
-    public async info(key: string): Promise<Info> {
+    public async info(key: string): Promise<InfoResponse> {
         const params: StringNumberArray = this.director.getKey(key).get();
         const commandData: CommandData = this.provider.getCommandData(CommandEnum.INFO, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
-        return this.renderFactory.getInfo(response).render();
+        return this.renderFactory.getInfoRender().render(response);
     }
 
     public async queryIndex(filters: FilterBuilder): Promise<string[]> {
@@ -154,17 +168,17 @@ export class RedisTimeSeries {
     }
 
     public async delete(...keys: string[]): Promise<boolean> {
-        const response = await this.invoker.setCommand(new DeleteCommand(this.provider.getClient(), keys)).run();
+        const response = await this.invoker.setCommand(new DeleteCommand(this.provider.getRTSClient(), keys)).run();
         return response === 1;
     }
 
     public async deleteAll(): Promise<boolean> {
-        await this.invoker.setCommand(new DeleteAllCommand(this.provider.getClient())).run();
+        await this.invoker.setCommand(new DeleteAllCommand(this.provider.getRTSClient())).run();
         return true;
     }
 
     public async reset(key: string, labels?: Label[], retention?: number): Promise<boolean> {
-        const deleted = await this.invoker.setCommand(new DeleteCommand(this.provider.getClient(), [key])).run();
+        const deleted = await this.invoker.setCommand(new DeleteCommand(this.provider.getRTSClient(), [key])).run();
         if (deleted !== 1) {
             throw new Error(`redis time series with key ${key} could not be deleted`);
         }
@@ -176,16 +190,21 @@ export class RedisTimeSeries {
         return response === "OK";
     }
 
+    public async disconnect(): Promise<boolean> {
+        const disconnected = await this.invoker.setCommand(new DisconnectCommand(this.provider.getRTSClient())).run();
+        return disconnected === "OK";
+    }
+
     protected async changeBy(
         command: string,
         sample: Sample,
         labels: Label[] = [],
-        retention?: number
-    ): Promise<boolean> {
-        const params: StringNumberArray = this.director.changeBy(sample, labels, retention).get();
+        retention?: number,
+        uncompressed?: boolean
+    ): Promise<number> {
+        const params: StringNumberArray = this.director.changeBy(sample, labels, retention, uncompressed).get();
         const commandData: CommandData = this.provider.getCommandData(command, params);
-        const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
-        return response === "OK";
+        return await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
     }
 }

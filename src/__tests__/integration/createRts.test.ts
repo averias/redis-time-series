@@ -8,6 +8,7 @@ const rtsClient = factory.create();
 
 afterAll(async () => {
     await rtsClient.delete("create1", "create2", "create3", "create4", "create5");
+    await rtsClient.disconnect();
 });
 
 test("create time series successfully", async () => {

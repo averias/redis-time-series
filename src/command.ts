@@ -34,7 +34,7 @@ class CommandProvider {
         };
     }
 
-    public getClient(): Redis.Redis {
+    public getRTSClient(): Redis.Redis {
         return this.client;
     }
 
@@ -126,6 +126,18 @@ class DeleteAllCommand implements Command {
     }
 }
 
+class DisconnectCommand implements Command {
+    protected readonly receiver: Redis.Redis;
+
+    constructor(receiver: Redis.Redis) {
+        this.receiver = receiver;
+    }
+
+    public execute(): Promise<string> {
+        return this.receiver.quit();
+    }
+}
+
 export {
     CommandProvider,
     CommandInvoker,
@@ -133,5 +145,6 @@ export {
     TimeSeriesCommand,
     CommandData,
     DeleteCommand,
-    DeleteAllCommand
+    DeleteAllCommand,
+    DisconnectCommand
 };

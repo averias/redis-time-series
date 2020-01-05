@@ -25,6 +25,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
     await rtsClient.delete("queryindex1", "queryindex2", "queryindex3");
+    await rtsClient.disconnect();
 });
 
 test("query index with label1 filter successfully", async () => {

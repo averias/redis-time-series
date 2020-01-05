@@ -16,6 +16,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
     await rtsClient.delete("rule1", "rule2");
+    await rtsClient.disconnect();
 });
 
 test("create rule successfully", async () => {

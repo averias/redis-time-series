@@ -2,37 +2,36 @@ import * as Redis from "ioredis";
 import { RedisTimeSeries } from "./redisTimeSeries";
 import { CommandInvoker, CommandProvider, CommandReceiver } from "./command";
 import { RequestParamsBuilder, RequestParamsDirector } from "./request";
-import { InfoRender, MultiGetResponseRender, MultiRangeResponseRender } from "./response";
+import { InfoResponseRender, MultiGetResponseRender, MultiRangeResponseRender } from "./response";
 
 class RenderFactory {
-    public getMultiRangeResponse(response: any[]): MultiRangeResponseRender {
-        return new MultiRangeResponseRender(response);
+    public getMultiRangeRender(): MultiRangeResponseRender {
+        return new MultiRangeResponseRender();
     }
 
-    public getMultiGetResponse(response: any[]): MultiGetResponseRender {
-        return new MultiGetResponseRender(response);
+    public getMultiGetRender(): MultiGetResponseRender {
+        return new MultiGetResponseRender();
     }
 
-    public getInfo(response: any[]): InfoRender {
-        return new InfoRender(response);
+    public getInfoRender(): InfoResponseRender {
+        return new InfoResponseRender();
     }
 }
 
 class RedisTimeSeriesFactory {
-    protected readonly client: Redis.Redis;
     protected options: Redis.RedisOptions = {
         port: 6379,
         host: "127.0.0.1",
         db: 0
     };
 
-    constructor(options: Redis.RedisOptions | Redis.Redis = {}) {
-        this.client = this.getClient(options);
+    constructor(options: Redis.RedisOptions = {}) {
+        this.options = { ...this.options, ...options };
     }
 
     public create(): RedisTimeSeries {
-        const commandProvider: CommandProvider = new CommandProvider(this.client);
-        const commandReceiver: CommandReceiver = new CommandReceiver(commandProvider.getClient());
+        const commandProvider: CommandProvider = new CommandProvider(this.getRedisClient());
+        const commandReceiver: CommandReceiver = new CommandReceiver(commandProvider.getRTSClient());
         const director: RequestParamsDirector = new RequestParamsDirector(new RequestParamsBuilder());
 
         return new RedisTimeSeries(
@@ -44,12 +43,7 @@ class RedisTimeSeriesFactory {
         );
     }
 
-    protected getClient(options: Redis.RedisOptions | Redis.Redis): Redis.Redis {
-        if (options instanceof Redis) {
-            return options;
-        }
-        this.options = { ...this.options, ...options };
-
+    protected getRedisClient(): Redis.Redis {
         return new Redis(this.options);
     }
 }

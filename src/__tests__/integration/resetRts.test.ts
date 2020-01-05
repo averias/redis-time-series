@@ -22,6 +22,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
     await rtsClient.deleteAll();
+    await rtsClient.disconnect();
 });
 
 test("reset successfully", async () => {

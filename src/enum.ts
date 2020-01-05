@@ -24,7 +24,9 @@ enum CommandKeyword {
     MAX_TIMESTAMP = "+",
     CURRENT_TIMESTAMP = "*",
     COUNT = "COUNT",
-    FILTER = "FILTER"
+    FILTER = "FILTER",
+    WITHLABELS = "WITHLABELS",
+    UNCOMPRESSED = "UNCOMPRESSED"
 }
 
 enum AggregationType {

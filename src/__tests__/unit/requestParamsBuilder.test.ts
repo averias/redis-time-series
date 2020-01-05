@@ -132,6 +132,10 @@ test("add full default range", () => {
     ]);
 });
 
+test("add no range", () => {
+    expect(builder.addRange().get().length).toEqual(0);
+});
+
 test("add filters", () => {
     const filters = new FilterBuilder("filter1", 100);
     expect(builder.addFilters(filters).get()).toEqual(["filter1=100"]);
