@@ -4,7 +4,7 @@ import { Sample } from "./sample";
 import { Aggregation } from "./aggregation";
 import { TimestampRange } from "./timestampRange";
 import { FilterBuilder } from "./filter";
-import { MultiGetResponse, MultiRangeResponse, InfoResponse } from "./response";
+import { MultiGetResponse, MultiRangeResponse, InfoResponse, MultiAddResponseError} from "./response";
 import {
     CommandData,
     CommandInvoker,
@@ -62,7 +62,7 @@ export class RedisTimeSeries {
         return await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
     }
 
-    public async multiAdd(samples: Sample[]): Promise<number> {
+    public async multiAdd(samples: Sample[]): Promise<(number | MultiAddResponseError)[]> {
         const params: StringNumberArray = this.director.multiAdd(samples).get();
         const commandData: CommandData = this.provider.getCommandData(CommandEnum.MADD, params);
 

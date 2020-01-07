@@ -2,6 +2,11 @@ import { Label } from "./label";
 import { Sample } from "./sample";
 import { Aggregation } from "./aggregation";
 
+type MultiAddResponseError = {
+    stack: string;
+    message: string;
+};
+
 interface AggregationByKey {
     [key: string]: Aggregation;
 }
@@ -111,6 +116,7 @@ class InfoResponseRender {
 }
 
 export {
+    MultiAddResponseError,
     AggregationByKey,
     MultiRangeResponse,
     MultiGetResponse,

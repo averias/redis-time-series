@@ -94,6 +94,7 @@ test("multi add a too old sample fails", async () => {
     const sample50 = new Sample("add4", 50, now);
     const added = await rtsClient.multiAdd([sample40, sample50]);
 
+    // @ts-ignore
     expect(added[0].message).toMatch(/Timestamp cannot be older than the latest timestamp in the time series/);
     expect(added[1]).toEqual(now);
 });
@@ -103,5 +104,6 @@ test("multi add a non existent key fails", async () => {
     const sample50 = new Sample("add5", 40, now - 500000);
     const added = await rtsClient.multiAdd([sample50]);
 
+    // @ts-ignore
     expect(added[0].message).toMatch(/the key is not a TSDB key/);
 });
