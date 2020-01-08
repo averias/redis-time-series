@@ -8,16 +8,29 @@
     "test": "jest -i --config jest.config.js",
     "test:watch": "jest -i --config jest.config.js --coverage --watchAll",
     "build": "tsc",
-    "lint": "eslint \"src/**\""
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "eslint \"src/**\"",
+    "prepare" : "npm run build",
+    "prepublishOnly" : "npm test && npm run lint",
+    "preversion" : "npm run lint",
+    "version" : "npm run format && git add -A src",
+    "postversion" : "git push && git push --tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/averias/redis-time-series.git"
   },
   "keywords": [
     "redis",
     "redistimeseries",
     "redislab",
-    "timeseries"
+    "timeseries",
+    "javascript",
+    "typescript"
   ],
-  "author": "",
+  "author": "Rafa Campoy",
   "license": "MIT",
+  "homepage": "https://github.com/averias/redis-time-series",
   "dependencies": {
     "ioredis": "^4.14.1"
   },
