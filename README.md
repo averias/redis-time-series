@@ -57,7 +57,7 @@ for IORedis.
 
 ## Commands
 After creating a `RedisTimeSeries` from `RedisTimeSeries::create` you can issue the following async commands. 
-All of them return a `Promise` if the command was executed successfully, otherwise and `Error` will be thrown.
+All of them return a `Promise` if the command was executed successfully, otherwise, an `Error` will be thrown.
 
 ### `Create`
 Creates a new time-series with an optional array of labels and optional retention. If the time-series `key` already
@@ -172,7 +172,7 @@ If this command is used to add data to an existing time-series, retentionTime an
 A sample represents the new value to be added where:
 - `key`: is the time-series and
 - `value`: the value to add
-- `timestamp`: (optional) if it's provided must be a valid timestamp and no older than last one added. If it's omitted, it will store a string value `*`, which represents a current timestamp in redis server
+- `timestamp`: (optional) if it's provided, must be a valid timestamp and no older than the last one added. If it's omitted, it will store a string value `*`, which represents a current timestamp in Redis server
 
 `Sample(key: string, value: number, timestamp?: number)`
 
@@ -364,7 +364,7 @@ example();
 More info: [TS.INCRBY / TS.DECRBY](https://oss.redislabs.com/redistimeseries/commands/#tsincrbytsdecrby)
 
 ### `CreateRule/DeleteRule`
-Creates a compaction rule.
+it creates a compaction rule.
 
 `redisTimeSeries.createRule(sourceKey: string, destKey: string, aggregation: Aggregation): Promise<boolean>`
 
@@ -380,7 +380,7 @@ A aggregation represents a rule:
 - `aggregationType`: avg, sum, min, max, range, count, first, last, std.p, std.s, var.p and var.s. See `AggregationType` enum
 - `timeBucket`: a positive integer time bucket in milliseconds
 
-`Aggreagtion(type: string, timeBucketInMs: number)`
+`Aggregation(type: string, timeBucketInMs: number)`
 
 **Response**
 
@@ -438,14 +438,14 @@ It queries a timestamp range.
 
 - `range`: a `TimestampRange` object
 - `count`: (optional) maximum number of returned samples per time-series
-- `agregation`: (optional) aggregation rule
+- `aggregation`: (optional) aggregation rule
 
 
 **TimestampRange**
 
 It represents a timestamp filter for the query:
 - `from`: (optional) start timestamp value, if it's not specified or `undefined` represents the minimum possible timestamp (0)
-- `to`: (optional) end timestamp value, if it's not specified or `undefined` represents the maximum possible timestamp (current timestamp in the redis server)
+- `to`: (optional) end timestamp value, if it's not specified or `undefined` represents the maximum possible timestamp (current timestamp in the Redis server)
 
 `TimestampRange(from?: number, to?: number)`
 
@@ -490,8 +490,7 @@ const example = async () => {
 example();
 ```
 
-More info: 
-- [TS.RANGE](https://oss.redislabs.com/redistimeseries/commands/#tsrange)
+More info: [TS.RANGE](https://oss.redislabs.com/redistimeseries/commands/#tsrange)
 
 ### `MultiRange`
 It queries a timestamp range across multiple time-series by using filters.
@@ -501,7 +500,7 @@ It queries a timestamp range across multiple time-series by using filters.
 - `range`: a `TimestampRange` object
 - `filters`: a `FilterBuilder` which will generate an array of filter to be applied across multiple time-series 
 - `count`: (optional) maximum number of returned samples per time-series
-- `agregation`: (optional) aggregation rule
+- `aggregation`: (optional) aggregation rule
 - `withLabels`: (optional) by default labels will be not included in the response, if true, they will
 
 
@@ -589,8 +588,7 @@ const example = async () => {
 example();
 ```
 
-More info: 
-- [TS.MULTIRANGE](https://oss.redislabs.com/redistimeseries/commands/#tsmrange)
+More info: [TS.MULTIRANGE](https://oss.redislabs.com/redistimeseries/commands/#tsmrange)
 
 ### `Get`
 Get the last sample from an existing time-series.
@@ -709,8 +707,7 @@ const example = async () => {
 example();
 ```
 
-More info: 
-- [TS.MULTIGET](https://oss.redislabs.com/redistimeseries/commands/#tsmget)
+More info: [TS.MULTIGET](https://oss.redislabs.com/redistimeseries/commands/#tsmget)
 
 ### `QueryIndex`
 Get all time-series keys matching the filter list.
@@ -762,8 +759,7 @@ const example = async () => {
 example();
 ```
 
-More info: 
-- [TS.QUERYINDEX](https://oss.redislabs.com/redistimeseries/commands/#tsqueryindex)
+More info: [TS.QUERYINDEX](https://oss.redislabs.com/redistimeseries/commands/#tsqueryindex)
 
 ### `Info`
 Returns information and statistics a time-series specified by `key`.
@@ -772,7 +768,7 @@ Returns information and statistics a time-series specified by `key`.
 
 **Response**
 
-A `InfoResponse` object
+An `InfoResponse` object
 
 ```
 interface InfoResponse {
@@ -828,8 +824,7 @@ const example = async () => {
 example();
 ```
 
-More info: 
-- [TS.info](https://oss.redislabs.com/redistimeseries/commands/#tsinfo)
+More info: [TS.INFO](https://oss.redislabs.com/redistimeseries/commands/#tsinfo)
 
 ### `Delete`
 Deletes a time-series `key` by using Redis `del` command.
@@ -867,6 +862,18 @@ Disconnects the `RedisTimeSeries` client from Redis server.
 **Response**
 
 It returns `true` if the client was disconnected successfully, otherwise `false`.
+
+
+## Test
+Tests can be run locally with docker. `docker.compose.yml` file will build two services:
+- redis-time-series: node container with the source code and all dependent packages installed, where you can run the tests from
+- redislabs-redistimeseries: redis container built from `redislabs/redistimeseries:1.2.0` image
+
+You can follow these steps to build the Docker services and run the tests:
+- from the command line run: `docker-compose up --build -d` to build the Docker services
+- get access to `redis-times-series` service by running `docker exec -it redis-time-series bash`
+- after getting access to `redis-times-series` service, run `npm run test` from inside to run the tests
+
 
 ## License
 Redis-time-series code is distributed under MIT license, see [LICENSE](https://github.com/averias/redis-time-series/blob/master/LICENSE) 

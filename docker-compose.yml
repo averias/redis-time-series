@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  redistimeseries:
+    container_name: redislabs-redistimeseries
+    image: redislabs/redistimeseries:1.2.0
+  node:
+    container_name: redis-time-series
+    build:
+      dockerfile: Dockerfile
+      context: .
+    volumes:
+      - .:/app

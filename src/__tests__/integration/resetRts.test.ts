@@ -3,8 +3,7 @@ import * as Redis from "ioredis";
 import { Label } from "../../entity/label";
 
 const options: Redis.RedisOptions = {
-    port: 6381,
-    host: "127.0.0.1",
+    host: "redislabs-redistimeseries",
     db: 14
 };
 const factory = new RedisTimeSeriesFactory(options);

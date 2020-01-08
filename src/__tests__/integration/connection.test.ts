@@ -3,8 +3,7 @@ import * as Redis from "ioredis";
 
 test("lazy connection", async () => {
     const redisOptions: Redis.RedisOptions = {
-        port: 6381,
-        host: "127.0.0.1",
+        host: "redislabs-redistimeseries",
         db: 15,
         lazyConnect: true
     };
