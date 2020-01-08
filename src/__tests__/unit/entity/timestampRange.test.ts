@@ -1,5 +1,5 @@
-import { CommandKeyword } from "../../enum/commandKeyword";
-import { TimestampRange } from "../../entity/timestampRange";
+import { CommandKeyword } from "../../../enum/commandKeyword";
+import { TimestampRange } from "../../../entity/timestampRange";
 
 test("timestamp range creation with default values", () => {
     const tsRange = new TimestampRange();

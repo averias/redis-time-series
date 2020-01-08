@@ -1,11 +1,11 @@
-import { Sample } from "../../entity/sample";
-import { RenderFactory } from "../../factory/render";
-import { Label } from "../../entity/label";
-import { AggregationType } from "../../enum/aggregationType";
-import { Aggregation } from "../../entity/aggregation";
-import { MultiRangeResponse } from "../../response/interface/multiRangeResponse";
-import { MultiGetResponse } from "../../response/interface/multiGetResponse";
-import { InfoResponse } from "../../response/interface/infoResponse";
+import { Sample } from "../../../entity/sample";
+import { RenderFactory } from "../../../factory/render";
+import { Label } from "../../../entity/label";
+import { AggregationType } from "../../../enum/aggregationType";
+import { Aggregation } from "../../../entity/aggregation";
+import { MultiRangeResponse } from "../../../response/interface/multiRangeResponse";
+import { MultiGetResponse } from "../../../response/interface/multiGetResponse";
+import { InfoResponse } from "../../../response/interface/infoResponse";
 
 let renderFactory: RenderFactory;
 const date = Date.now();

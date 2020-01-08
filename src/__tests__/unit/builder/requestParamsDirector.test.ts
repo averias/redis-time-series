@@ -1,12 +1,12 @@
-import { RequestParamsDirector } from "../../builder/requestParamsDirector";
-import { Label } from "../../entity/label";
-import { AggregationType } from "../../enum/aggregationType";
-import { CommandKeyword } from "../../enum/commandKeyword";
-import { Sample } from "../../entity/sample";
-import { Aggregation } from "../../entity/aggregation";
-import { TimestampRange } from "../../entity/timestampRange";
-import { FilterBuilder } from "../../builder/filterBuilder";
-import { RequestParamsBuilder } from "../../builder/requestParamsBuilder";
+import { RequestParamsDirector } from "../../../builder/requestParamsDirector";
+import { Label } from "../../../entity/label";
+import { AggregationType } from "../../../enum/aggregationType";
+import { CommandKeyword } from "../../../enum/commandKeyword";
+import { Sample } from "../../../entity/sample";
+import { Aggregation } from "../../../entity/aggregation";
+import { TimestampRange } from "../../../entity/timestampRange";
+import { FilterBuilder } from "../../../builder/filterBuilder";
+import { RequestParamsBuilder } from "../../../builder/requestParamsBuilder";
 
 let director: RequestParamsDirector;
 let label1: Label;

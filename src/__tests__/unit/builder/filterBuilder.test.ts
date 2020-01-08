@@ -1,6 +1,6 @@
-import { FilterOperator } from "../../enum/filterOperator";
-import { Filter } from "../../entity/filter";
-import { FilterBuilder } from "../../builder/filterBuilder";
+import { FilterOperator } from "../../../enum/filterOperator";
+import { Filter } from "../../../entity/filter";
+import { FilterBuilder } from "../../../builder/filterBuilder";
 
 test("all filter creation", () => {
     const filterBuilder = new FilterBuilder("label1", 21);
