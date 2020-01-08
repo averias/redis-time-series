@@ -1,5 +1,6 @@
-import { CommandKeyword, AggregationType } from "./enum";
-import { StringNumberArray } from "./request";
+import { AggregationType } from "../enum/aggregationType";
+import { CommandKeyword } from "../enum/commandKeyword";
+import { StringNumberArray } from "../index";
 
 export class Aggregation {
     private readonly type: string;

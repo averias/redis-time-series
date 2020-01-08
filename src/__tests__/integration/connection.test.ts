@@ -1,4 +1,4 @@
-import { RedisTimeSeriesFactory } from "../../factory";
+import { RedisTimeSeriesFactory } from "../../factory/redisTimeSeries";
 import * as Redis from "ioredis";
 
 test("lazy connection", async () => {

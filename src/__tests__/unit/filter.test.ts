@@ -1,5 +1,5 @@
-import { FilterOperator } from "../../enum";
-import { Filter } from "../../filter";
+import { FilterOperator } from "../../enum/filterOperator";
+import { Filter } from "../../entity/filter";
 
 test("simple numeric filter creation", () => {
     const filter = new Filter("label", FilterOperator.EQUAL, 28);

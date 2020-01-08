@@ -1,22 +1,24 @@
-import { CommandEnum } from "./enum";
-import { Label } from "./label";
-import { Sample } from "./sample";
-import { Aggregation } from "./aggregation";
-import { TimestampRange } from "./timestampRange";
-import { FilterBuilder } from "./filter";
-import { MultiGetResponse, MultiRangeResponse, InfoResponse, MultiAddResponseError} from "./response";
-import {
-    CommandData,
-    CommandInvoker,
-    CommandProvider,
-    CommandReceiver,
-    DeleteCommand,
-    DeleteAllCommand,
-    TimeSeriesCommand,
-    DisconnectCommand
-} from "./command";
-import { RequestParamsDirector, StringNumberArray } from "./request";
-import { RenderFactory } from "./factory";
+import { CommandName } from "./enum/commandName";
+import { Label } from "./entity/label";
+import { Sample } from "./entity/sample";
+import { Aggregation } from "./entity/aggregation";
+import { TimestampRange } from "./entity/timestampRange";
+import { FilterBuilder } from "./builder/filterBuilder";
+import { DisconnectCommand } from "./command/disconnectCommand";
+import { RequestParamsDirector } from "./builder/requestParamsDirector";
+import { RenderFactory } from "./factory/render";
+import { CommandData } from "./command/interface/commandData";
+import { CommandProvider } from "./command/commandProvider";
+import { CommandInvoker } from "./command/commandInvoker";
+import { CommandReceiver } from "./command/commandReceiver";
+import { TimeSeriesCommand } from "./command/timeSeriesCommand";
+import { DeleteCommand } from "./command/deleteCommand";
+import { DeleteAllCommand } from "./command/deleteAllCommand";
+import { MultiAddResponseError } from "./response/type/multiAddResponseError";
+import { MultiRangeResponse } from "./response/interface/multiRangeResponse";
+import { MultiGetResponse } from "./response/interface/multiGetResponse";
+import { InfoResponse } from "./response/interface/infoResponse";
+import { StringNumberArray } from "./index";
 
 export class RedisTimeSeries {
     protected readonly provider: CommandProvider;
@@ -41,7 +43,7 @@ export class RedisTimeSeries {
 
     public async create(key: string, labels?: Label[], retention?: number): Promise<boolean> {
         const params: StringNumberArray = this.director.create(key, labels, retention).get();
-        const commandData: CommandData = this.provider.getCommandData(CommandEnum.CREATE, params);
+        const commandData: CommandData = this.provider.getCommandData(CommandName.CREATE, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
         return response === "OK";
@@ -49,7 +51,7 @@ export class RedisTimeSeries {
 
     public async alter(key: string, labels?: Label[], retention?: number): Promise<boolean> {
         const params: StringNumberArray = this.director.alter(key, labels, retention).get();
-        const commandData: CommandData = this.provider.getCommandData(CommandEnum.ALTER, params);
+        const commandData: CommandData = this.provider.getCommandData(CommandName.ALTER, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
         return response === "OK";
@@ -57,14 +59,14 @@ export class RedisTimeSeries {
 
     public async add(sample: Sample, labels?: Label[], retention?: number): Promise<number> {
         const params: StringNumberArray = this.director.add(sample, labels, retention).get();
-        const commandData: CommandData = this.provider.getCommandData(CommandEnum.ADD, params);
+        const commandData: CommandData = this.provider.getCommandData(CommandName.ADD, params);
 
         return await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
     }
 
     public async multiAdd(samples: Sample[]): Promise<(number | MultiAddResponseError)[]> {
         const params: StringNumberArray = this.director.multiAdd(samples).get();
-        const commandData: CommandData = this.provider.getCommandData(CommandEnum.MADD, params);
+        const commandData: CommandData = this.provider.getCommandData(CommandName.MADD, params);
 
         return await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
     }
@@ -75,7 +77,7 @@ export class RedisTimeSeries {
         retention?: number,
         uncompressed?: boolean
     ): Promise<number> {
-        return this.changeBy(CommandEnum.INCRBY, sample, labels, retention, uncompressed);
+        return this.changeBy(CommandName.INCRBY, sample, labels, retention, uncompressed);
     }
 
     public async decrementBy(
@@ -84,12 +86,12 @@ export class RedisTimeSeries {
         retention?: number,
         uncompressed?: boolean
     ): Promise<number> {
-        return this.changeBy(CommandEnum.DECRBY, sample, labels, retention, uncompressed);
+        return this.changeBy(CommandName.DECRBY, sample, labels, retention, uncompressed);
     }
 
     public async createRule(sourceKey: string, destKey: string, aggregation: Aggregation): Promise<boolean> {
         const params: StringNumberArray = this.director.createRule(sourceKey, destKey, aggregation).get();
-        const commandData: CommandData = this.provider.getCommandData(CommandEnum.CREATE_RULE, params);
+        const commandData: CommandData = this.provider.getCommandData(CommandName.CREATE_RULE, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
         return response === "OK";
@@ -97,7 +99,7 @@ export class RedisTimeSeries {
 
     public async deleteRule(sourceKey: string, destKey: string): Promise<boolean> {
         const params: StringNumberArray = this.director.deleteRule(sourceKey, destKey).get();
-        const commandData: CommandData = this.provider.getCommandData(CommandEnum.DELETE_RULE, params);
+        const commandData: CommandData = this.provider.getCommandData(CommandName.DELETE_RULE, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
         return response === "OK";
@@ -110,7 +112,7 @@ export class RedisTimeSeries {
         aggregation?: Aggregation
     ): Promise<Array<Sample>> {
         const params: StringNumberArray = this.director.range(key, range, count, aggregation).get();
-        const commandData: CommandData = this.provider.getCommandData(CommandEnum.RANGE, params);
+        const commandData: CommandData = this.provider.getCommandData(CommandName.RANGE, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
         const samples: Sample[] = [];
@@ -131,7 +133,7 @@ export class RedisTimeSeries {
         const params: StringNumberArray = this.director
             .multiRange(range, filters, count, aggregation, withLabels)
             .get();
-        const commandData: CommandData = this.provider.getCommandData(CommandEnum.MULTI_RANGE, params);
+        const commandData: CommandData = this.provider.getCommandData(CommandName.MULTI_RANGE, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
         return this.renderFactory.getMultiRangeRender().render(response);
@@ -139,7 +141,7 @@ export class RedisTimeSeries {
 
     public async get(key: string): Promise<Sample> {
         const params: StringNumberArray = this.director.getKey(key).get();
-        const commandData: CommandData = this.provider.getCommandData(CommandEnum.GET, params);
+        const commandData: CommandData = this.provider.getCommandData(CommandName.GET, params);
         const sample = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
         return new Sample(key, Number(sample[1]), sample[0]);
@@ -147,7 +149,7 @@ export class RedisTimeSeries {
 
     public async multiGet(filters: FilterBuilder): Promise<Array<MultiGetResponse>> {
         const params: StringNumberArray = this.director.multiGet(filters).get();
-        const commandData: CommandData = this.provider.getCommandData(CommandEnum.MULTI_GET, params);
+        const commandData: CommandData = this.provider.getCommandData(CommandName.MULTI_GET, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
         return this.renderFactory.getMultiGetRender().render(response);
@@ -155,7 +157,7 @@ export class RedisTimeSeries {
 
     public async info(key: string): Promise<InfoResponse> {
         const params: StringNumberArray = this.director.getKey(key).get();
-        const commandData: CommandData = this.provider.getCommandData(CommandEnum.INFO, params);
+        const commandData: CommandData = this.provider.getCommandData(CommandName.INFO, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
         return this.renderFactory.getInfoRender().render(response);
@@ -163,7 +165,7 @@ export class RedisTimeSeries {
 
     public async queryIndex(filters: FilterBuilder): Promise<string[]> {
         const params: StringNumberArray = this.director.queryIndex(filters).get();
-        const commandData: CommandData = this.provider.getCommandData(CommandEnum.QUERY_INDEX, params);
+        const commandData: CommandData = this.provider.getCommandData(CommandName.QUERY_INDEX, params);
         return await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
     }
 
@@ -184,7 +186,7 @@ export class RedisTimeSeries {
         }
 
         const params: StringNumberArray = this.director.create(key, labels, retention).get();
-        const commandData: CommandData = this.provider.getCommandData(CommandEnum.CREATE, params);
+        const commandData: CommandData = this.provider.getCommandData(CommandName.CREATE, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
         return response === "OK";

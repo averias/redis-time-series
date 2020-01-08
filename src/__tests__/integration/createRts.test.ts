@@ -1,6 +1,6 @@
-import { RedisTimeSeriesFactory } from "../../index";
-import { Label } from "../../label";
-import { FilterBuilder } from "../../filter";
+import { RedisTimeSeriesFactory } from "../../factory/redisTimeSeries";
+import { Label } from "../../entity/label";
+import { FilterBuilder } from "../../builder/filterBuilder";
 import { testOptions } from "../../__tests_config__/data";
 
 const factory = new RedisTimeSeriesFactory(testOptions);

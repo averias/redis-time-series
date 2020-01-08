@@ -1,7 +1,7 @@
-import { Sample } from "./sample";
-import { Label } from "./label";
-import { Filter } from "./filter";
-import { StringNumberArray } from "./request";
+import { Sample } from "../entity/sample";
+import { Label } from "../entity/label";
+import { Filter } from "../entity/filter";
+import { StringNumberArray } from "../index";
 
 export class List {
     private readonly list: (Label | Sample | Filter)[];

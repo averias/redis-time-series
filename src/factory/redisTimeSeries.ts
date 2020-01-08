@@ -1,24 +1,13 @@
 import * as Redis from "ioredis";
-import { RedisTimeSeries } from "./redisTimeSeries";
-import { CommandInvoker, CommandProvider, CommandReceiver } from "./command";
-import { RequestParamsBuilder, RequestParamsDirector } from "./request";
-import { InfoResponseRender, MultiGetResponseRender, MultiRangeResponseRender } from "./response";
+import { RedisTimeSeries } from "../redisTimeSeries";
+import { RequestParamsDirector } from "../builder/requestParamsDirector";
+import { RenderFactory } from "./render";
+import { CommandProvider } from "../command/commandProvider";
+import { CommandInvoker } from "../command/commandInvoker";
+import { CommandReceiver } from "../command/commandReceiver";
+import { RequestParamsBuilder } from "../builder/requestParamsBuilder";
 
-class RenderFactory {
-    public getMultiRangeRender(): MultiRangeResponseRender {
-        return new MultiRangeResponseRender();
-    }
-
-    public getMultiGetRender(): MultiGetResponseRender {
-        return new MultiGetResponseRender();
-    }
-
-    public getInfoRender(): InfoResponseRender {
-        return new InfoResponseRender();
-    }
-}
-
-class RedisTimeSeriesFactory {
+export class RedisTimeSeriesFactory {
     protected options: Redis.RedisOptions = {
         port: 6379,
         host: "127.0.0.1",
@@ -47,5 +36,3 @@ class RedisTimeSeriesFactory {
         return new Redis(this.options);
     }
 }
-
-export { RedisTimeSeriesFactory, RenderFactory };

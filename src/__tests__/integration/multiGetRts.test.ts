@@ -1,8 +1,8 @@
-import { RedisTimeSeriesFactory } from "../../factory";
+import { RedisTimeSeriesFactory } from "../../factory/redisTimeSeries";
 import { testOptions } from "../../__tests_config__/data";
-import { Sample } from "../../sample";
-import { Label } from "../../label";
-import { FilterBuilder } from "../../filter";
+import { Sample } from "../../entity/sample";
+import { Label } from "../../entity/label";
+import { FilterBuilder } from "../../builder/filterBuilder";
 
 const factory = new RedisTimeSeriesFactory(testOptions);
 const rtsClient = factory.create();

@@ -11,12 +11,10 @@ module.exports = {
         "eslint:recommended"
     ],
     parserOptions: {
-        // project: './tsconfig.json'
         ecmaVersion: 6,
         sourceType: "module"
     },
     rules: {
-        // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/ban-ts-ignore": "off"
     },

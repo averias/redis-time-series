@@ -1,5 +1,5 @@
-import { CommandKeyword } from "./enum";
-import { StringNumberArray } from "./request";
+import { CommandKeyword } from "../enum/commandKeyword";
+import { StringNumberArray } from "../index";
 
 export class Count {
     private readonly count: number;

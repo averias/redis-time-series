@@ -1,5 +1,6 @@
-import { AggregationType, CommandKeyword } from "../../enum";
-import { Aggregation } from "../../aggregation";
+import { AggregationType } from "../../enum/aggregationType";
+import { CommandKeyword } from "../../enum/commandKeyword";
+import { Aggregation } from "../../entity/aggregation";
 
 test("create valid aggregation with integer time bucket", () => {
     const aggregation = new Aggregation(AggregationType.AVG, 5000);

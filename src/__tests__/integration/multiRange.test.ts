@@ -1,11 +1,11 @@
-import { RedisTimeSeriesFactory } from "../../factory";
+import { RedisTimeSeriesFactory } from "../../factory/redisTimeSeries";
 import { testOptions } from "../../__tests_config__/data";
-import { Sample } from "../../sample";
-import { Aggregation } from "../../aggregation";
-import { AggregationType } from "../../enum";
-import { TimestampRange } from "../../timestampRange";
-import { Label } from "../../label";
-import { FilterBuilder } from "../../filter";
+import { Sample } from "../../entity/sample";
+import { Aggregation } from "../../entity/aggregation";
+import { AggregationType } from "../../enum/aggregationType";
+import { TimestampRange } from "../../entity/timestampRange";
+import { Label } from "../../entity/label";
+import { FilterBuilder } from "../../builder/filterBuilder";
 
 const factory = new RedisTimeSeriesFactory(testOptions);
 const rtsClient = factory.create();

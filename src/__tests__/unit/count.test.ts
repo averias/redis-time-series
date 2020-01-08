@@ -1,5 +1,5 @@
-import { Count } from "../../count";
-import { CommandKeyword } from "../../enum";
+import { Count } from "../../entity/count";
+import { CommandKeyword } from "../../enum/commandKeyword";
 
 test("count creation with valid integer number", () => {
     const count = new Count(5);

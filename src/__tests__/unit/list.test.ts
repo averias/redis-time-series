@@ -1,8 +1,8 @@
-import { Label } from "../../label";
-import { List } from "../../list";
-import { Sample } from "../../sample";
-import { Filter } from "../../filter";
-import { FilterOperator } from "../../enum";
+import { Label } from "../../entity/label";
+import { List } from "../../iterator/list";
+import { Sample } from "../../entity/sample";
+import { Filter } from "../../entity/filter";
+import { FilterOperator } from "../../enum/filterOperator";
 
 test("label list", () => {
     const labelList: Label[] = [];

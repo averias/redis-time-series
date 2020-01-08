@@ -1,10 +1,11 @@
-import { RequestParamsBuilder } from "../../request";
-import { AggregationType, CommandKeyword } from "../../enum";
-import { Label } from "../../label";
-import { Sample } from "../../sample";
-import { Aggregation } from "../../aggregation";
-import { TimestampRange } from "../../timestampRange";
-import { FilterBuilder } from "../../filter";
+import { AggregationType } from "../../enum/aggregationType";
+import { CommandKeyword } from "../../enum/commandKeyword";
+import { Label } from "../../entity/label";
+import { Sample } from "../../entity/sample";
+import { Aggregation } from "../../entity/aggregation";
+import { TimestampRange } from "../../entity/timestampRange";
+import { FilterBuilder } from "../../builder/filterBuilder";
+import { RequestParamsBuilder } from "../../builder/requestParamsBuilder";
 
 let builder: RequestParamsBuilder;
 

@@ -1,5 +1,5 @@
-import { Sample } from "../../sample";
-import { CommandKeyword } from "../../enum";
+import { Sample } from "../../entity/sample";
+import { CommandKeyword } from "../../enum/commandKeyword";
 
 test("sample creation with integer value and without timestamp", () => {
     const sample = new Sample("sample1", 34);

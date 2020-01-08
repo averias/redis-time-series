@@ -1,4 +1,4 @@
-import { StringNumberArray } from "./request";
+import { StringNumberArray } from "../index";
 
 export class Label {
     private readonly name: string;

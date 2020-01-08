@@ -1,6 +1,6 @@
-import { RedisTimeSeriesFactory } from "../../factory";
+import { RedisTimeSeriesFactory } from "../../factory/redisTimeSeries";
 import * as Redis from "ioredis";
-import { Label } from "../../label";
+import { Label } from "../../entity/label";
 
 const options: Redis.RedisOptions = {
     port: 6381,

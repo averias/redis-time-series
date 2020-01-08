@@ -1,0 +1,16 @@
+export enum CommandName {
+    CREATE = "TS.CREATE",
+    ALTER = "TS.ALTER",
+    ADD = "TS.ADD",
+    MADD = "TS.MADD",
+    INCRBY = "TS.INCRBY",
+    DECRBY = "TS.DECRBY",
+    CREATE_RULE = "TS.CREATERULE",
+    DELETE_RULE = "TS.DELETERULE",
+    RANGE = "TS.RANGE",
+    MULTI_RANGE = "TS.MRANGE",
+    GET = "TS.GET",
+    MULTI_GET = "TS.MGET",
+    INFO = "TS.INFO",
+    QUERY_INDEX = "TS.QUERYINDEX"
+}
