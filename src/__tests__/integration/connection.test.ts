@@ -1,8 +1,8 @@
 import { RedisTimeSeriesFactory } from "../../factory/redisTimeSeries";
-import * as Redis from "ioredis";
+import { ConnectionOptions } from "../../index";
 
 test("lazy connection", async () => {
-    const redisOptions: Redis.RedisOptions = {
+    const redisOptions: ConnectionOptions = {
         host: "redislabs-redistimeseries",
         db: 15,
         lazyConnect: true

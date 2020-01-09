@@ -6,15 +6,16 @@ import { CommandProvider } from "../command/commandProvider";
 import { CommandInvoker } from "../command/commandInvoker";
 import { CommandReceiver } from "../command/commandReceiver";
 import { RequestParamsBuilder } from "../builder/requestParamsBuilder";
+import { ConnectionOptions } from "../index";
 
 export class RedisTimeSeriesFactory {
-    protected options: Redis.RedisOptions = {
+    protected options: ConnectionOptions = {
         port: 6379,
         host: "127.0.0.1",
         db: 0
     };
 
-    constructor(options: Redis.RedisOptions = {}) {
+    constructor(options: ConnectionOptions = {}) {
         this.options = { ...this.options, ...options };
     }
 

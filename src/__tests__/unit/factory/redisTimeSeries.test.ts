@@ -5,13 +5,14 @@ import { RequestParamsDirector } from "../../../builder/requestParamsDirector";
 import { RedisTimeSeries } from "../../../redisTimeSeries";
 import * as Redis from "ioredis";
 import { RequestParamsBuilder } from "../../../builder/requestParamsBuilder";
+import { ConnectionOptions } from "../../../index";
 
 jest.mock("../../../command/commandProvider");
 jest.mock("../../../command/commandReceiver");
 jest.mock("../../../builder/requestParamsDirector");
 jest.mock("ioredis");
 
-const options: Redis.RedisOptions = {
+const options: ConnectionOptions = {
     port: 6379,
     host: "127.0.0.1",
     db: 0

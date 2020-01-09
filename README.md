@@ -41,13 +41,13 @@ example();
 
 If no param is provided to `RedisTimeSeries` constructor, it creates `RedsiTimeSeries` object with a default 
 connection (port: 6379, host: "127.0.0.1" and database: 15). You can specify your connection params by providing an 
-object of IORedis `RedisOptions` type which will overwrite those default connection params:
+object of `ConnectionOptions` type (an IORedis `RedisOptions` type) which will overwrite those default connection params:
 
 ```
-import * as Redis from "ioredis";
+import { ConnectionOptions } from "./index";
 import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
 
-const options: Redis.RedisOptions = {
+const options: ConnectionOptions = {
     port: 6381,
     host: "127.0.0.1",
     db: 15

@@ -1,8 +1,8 @@
 import { RedisTimeSeriesFactory } from "../../factory/redisTimeSeries";
-import * as Redis from "ioredis";
 import { Label } from "../../entity/label";
+import { ConnectionOptions } from "../../index";
 
-const options: Redis.RedisOptions = {
+const options: ConnectionOptions = {
     host: "redislabs-redistimeseries",
     db: 14
 };
