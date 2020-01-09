@@ -6,6 +6,11 @@ TypeScript and based on [ioredis](https://github.com/luin/ioredis)
 - Redis server 4.0+ version (recommended version 5.0+)
 - RedisTimeSeries Module 1.2.0+ installed on Redis server as specified in [Build and Run it yoursef](hhttps://oss.redislabs.com/redistimeseries/#build-and-run-it-yourself)
 
+
+## Install
+`npm i @averias/redis-time-series`
+
+
 ## Usage
 
 ```
