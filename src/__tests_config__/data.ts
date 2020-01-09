@@ -1,6 +1,6 @@
-import * as Redis from "ioredis";
+import { ConnectionOptions } from "../index";
 
-export const testOptions: Redis.RedisOptions = {
+export const testOptions: ConnectionOptions = {
     host: "redislabs-redistimeseries",
     db: 15
 };
