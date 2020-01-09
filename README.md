@@ -8,7 +8,7 @@ TypeScript and based on [ioredis](https://github.com/luin/ioredis)
 
 
 ## Install
-`npm i @averias/redis-time-series`
+`npm i redis-time-series-ts`
 
 
 ## Usage
