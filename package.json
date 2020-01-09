@@ -1,5 +1,5 @@
 {
-  "name": "redis-time-series",
+  "name": "@averias/redis-time-series",
   "version": "1.0.0",
   "description": "Javascript RedisTimeSeries client",
   "main": "lib/index.js",
