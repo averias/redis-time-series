@@ -52,8 +52,7 @@ test("multi get response render", () => {
                 ["label1", 10],
                 ["label2", 20]
             ],
-            date - 10000,
-            "10"
+            [date - 10000, "10"]
         ]
     ];
     const rendered: MultiGetResponse = responseRender.render(response).shift();

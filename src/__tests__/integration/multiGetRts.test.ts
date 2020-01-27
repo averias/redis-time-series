@@ -12,11 +12,13 @@ const label1 = new Label("label", "1");
 const sensor1 = new Label("sensor", "1");
 const sensor2 = new Label("sensor", "2");
 const sensor3 = new Label("sensor", "3");
+const sensor4 = new Label("sensor", "4");
 
 beforeAll(async () => {
     await rtsClient.create("multiget1", [label1, sensor1]);
     await rtsClient.create("multiget2", [label1, sensor2]);
     await rtsClient.create("multiget3", [sensor2, sensor3]);
+    await rtsClient.create("multiget4", [sensor4]);
 
     for (let i = 0; i < 10; i++) {
         await rtsClient.add(new Sample("multiget1", 20 + i, date + i * 1000));
@@ -26,13 +28,13 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await rtsClient.delete("multiget1", "multiget2", "multiget3");
+    await rtsClient.delete("multiget1", "multiget2", "multiget3", "multiget4");
     await rtsClient.disconnect();
 });
 
 test("query multi get with label1 filter successfully", async () => {
     const filter = new FilterBuilder("label", 1);
-    const multiGets = await rtsClient.multiGet(filter);
+    const multiGets = await rtsClient.multiGet(filter, true);
     expect(Array.isArray(multiGets)).toBe(true);
 
     const multiGet1 = multiGets.shift();
@@ -78,9 +80,8 @@ test("query multi get with sensor2 filter successfully", async () => {
     // @ts-ignore
     expect(multiGet1.key).toEqual("multiget2");
     // @ts-ignore
-    const labels1 = multiGet1.labels;
-    expect(labels1.shift()).toEqual(label1);
-    expect(labels1.shift()).toEqual(sensor2);
+    const labels = multiGet1.labels;
+    expect(labels.length).toBe(0);
 
     // @ts-ignore
     const sample1 = multiGet1.data;
@@ -94,8 +95,7 @@ test("query multi get with sensor2 filter successfully", async () => {
     expect(multiGet2.key).toEqual("multiget3");
     // @ts-ignore
     const labels2 = multiGet2.labels;
-    expect(labels2.shift()).toEqual(sensor2);
-    expect(labels2.shift()).toEqual(sensor3);
+    expect(labels2.length).toBe(0);
 
     // @ts-ignore
     const sample2 = multiGet2.data;
@@ -111,4 +111,25 @@ test("query multi get with filter not matching", async () => {
     const multiGets = await rtsClient.multiGet(filter);
     expect(Array.isArray(multiGets)).toBe(true);
     expect(multiGets.length).toBe(0);
+});
+
+test("query multi get with filter matching but no data", async () => {
+    const filter = new FilterBuilder("sensor", 4);
+    const multiGets = await rtsClient.multiGet(filter, true);
+    expect(Array.isArray(multiGets)).toBe(true);
+
+    const multiGet1 = multiGets.shift();
+    expect(multiGet1).not.toEqual(undefined);
+    // @ts-ignore
+    expect(multiGet1.key).toEqual("multiget4");
+    // @ts-ignore
+    const labels1 = multiGet1.labels;
+    expect(labels1.shift()).toEqual(sensor4);
+    expect(labels1.length).toBe(0);
+
+    // @ts-ignore
+    const sample1 = multiGet1.data;
+    // @ts-ignore
+    expect(sample1.getValue()).toEqual(0);
+    expect(sample1.getTimestamp()).toEqual(0);
 });

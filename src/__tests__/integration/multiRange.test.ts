@@ -226,7 +226,8 @@ test("aggregated query multi range with default timestamp and without labels", a
 
 test("aggregated query multi range with timestamp range not matching", async () => {
     const now = Date.now();
-    const timestampRange = new TimestampRange(now - 10000, now);
+    const start = now - 10000;
+    const timestampRange = new TimestampRange(start, now);
     const filter = new FilterBuilder("sensor", 3);
     for (const key in AggregationType) {
         const aggregationType = AggregationType[key];
@@ -249,7 +250,7 @@ test("aggregated query multi range with timestamp range not matching", async () 
         // @ts-ignore
         expect(sample1.getValue()).toEqual(0);
         // @ts-ignore
-        expect(sample1.getTimestamp()).toEqual(0);
+        expect(sample1.getTimestamp()).toEqual(start);
 
         expect(samples.length).toBe(0);
         expect(multiRanges.length).toBe(0);

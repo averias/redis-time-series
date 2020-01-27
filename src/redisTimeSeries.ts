@@ -147,8 +147,8 @@ export class RedisTimeSeries {
         return new Sample(key, Number(sample[1]), sample[0]);
     }
 
-    public async multiGet(filters: FilterBuilder): Promise<Array<MultiGetResponse>> {
-        const params: StringNumberArray = this.director.multiGet(filters).get();
+    public async multiGet(filters: FilterBuilder, withLabels?: boolean): Promise<Array<MultiGetResponse>> {
+        const params: StringNumberArray = this.director.multiGet(filters, withLabels).get();
         const commandData: CommandData = this.provider.getCommandData(CommandName.MULTI_GET, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
