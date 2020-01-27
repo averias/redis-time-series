@@ -4,7 +4,7 @@ TypeScript and based on [ioredis](https://github.com/luin/ioredis)
 
 ## Requirements
 - Redis server 4.0+ version (recommended version 5.0+)
-- RedisTimeSeries Module 1.2.0+ installed on Redis server as specified in [Build and Run it yoursef](hhttps://oss.redislabs.com/redistimeseries/#build-and-run-it-yourself)
+- RedisTimeSeries Module installed on Redis server as specified in [Build and Run it yoursef](hhttps://oss.redislabs.com/redistimeseries/#build-and-run-it-yourself)
 
 
 ## Install
@@ -534,7 +534,11 @@ interface MultiRangeResponse {
 }
 ```
 
-if `withLabels` is true, `labels` in `MultiRangeResponse` will be empty
+if `withLabels` is true, `labels` in `MultiRangeResponse` will be empty.
+
+If some of the keys returned by the filter doesn't include any sample because, for instance, the chosen timestamp range 
+doesn't match `MultiRangeResponse.data` will still include one sample in the array with value = 0 and timestamp = start
+timestamp range include in the query. 
 
 **Example**
 
@@ -652,6 +656,9 @@ interface MultiRangeResponse {
 ```
 
 if `withLabels` is true, `labels` in `MultiRangeResponse` will be empty
+
+If for a key returned because matches the filter but doesn't contain any data, `MultiGetResponse.data` will contain a 
+sample with value = 0 and timestamp = 0;
 
 **Example**
 
@@ -872,7 +879,7 @@ It returns `true` if the client was disconnected successfully, otherwise `false`
 ## Test
 Tests can be run locally with docker. `docker.compose.yml` file will build two services:
 - redis-time-series: node container with the source code and all dependent packages installed, where you can run the tests from
-- redislabs-redistimeseries: redis container built from `redislabs/redistimeseries:1.2.0` image
+- redislabs-redistimeseries: redis container built from `redislabs/redistimeseries:latest` image
 
 You can follow these steps to build the Docker services and run the tests:
 - from the command line run: `docker-compose up --build -d` to build the Docker services

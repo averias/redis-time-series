@@ -88,8 +88,8 @@ class RequestParamsDirector {
         return this.paramsBuilder.addKey(key);
     }
 
-    public multiGet(filters: FilterBuilder): RequestParamsBuilder {
-        return this.paramsBuilder.addFiltersWithKeyword(filters);
+    public multiGet(filters: FilterBuilder, withLabels?: boolean): RequestParamsBuilder {
+        return this.paramsBuilder.addWithLabels(withLabels).addFiltersWithKeyword(filters);
     }
 
     public queryIndex(filters: FilterBuilder): RequestParamsBuilder {
