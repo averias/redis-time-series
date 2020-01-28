@@ -1,3 +1,9 @@
+[![Test Coverage](https://api.codeclimate.com/v1/badges/f178828dd4e2cbaa32c5/test_coverage)](https://codeclimate.com/github/averias/redis-time-series/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/f178828dd4e2cbaa32c5/maintainability)](https://codeclimate.com/github/averias/redis-time-series/maintainability)
+[![Build Status](https://travis-ci.org/averias/redis-time-series.svg?branch=master)](https://travis-ci.org/averias/redis-time-series)
+[![npm version](https://badge.fury.io/js/redis-time-series-ts.svg)](https://badge.fury.io/js/redis-time-series-ts)
+[![GitHub](https://img.shields.io/github/license/averias/redis-time-series.svg)](https://github.com/averias/redis-time-series)
+
 # Redis-Time-Series
 A Javascript client for [RedisLab/RedisTimeSeries Module](https://oss.redislabs.com/redistimeseries/) implemented in 
 TypeScript and based on [ioredis](https://github.com/luin/ioredis)
