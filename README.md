@@ -1,3 +1,6 @@
+[![Actions Status](https://github.com/averias/redis-time-series/workflows/CI/badge.svg)](https://github.com/averias/redis-time-series/actions)
+[![npm version](https://badge.fury.io/js/redis-time-series-ts.svg)](https://badge.fury.io/js/redis-time-series-ts)
+
 # Redis-Time-Series
 A Javascript client for [RedisLab/RedisTimeSeries Module](https://oss.redislabs.com/redistimeseries/) implemented in 
 TypeScript and based on [ioredis](https://github.com/luin/ioredis)
