@@ -29,7 +29,7 @@ script:
   - npm run test
 
 after_script:
-  - node_version=$(node -v); if [ ${node_version:1:1} = 12 ]; then ./cc-test-reporter after-build -t lcov ./coverage/lcov.info --exit-code $TRAVIS_TEST_RESULT; fi
+  - ./cc-test-reporter after-build -t lcov ./coverage/lcov.info --exit-code $TRAVIS_TEST_RESULT
 
 addons:
   hosts:
