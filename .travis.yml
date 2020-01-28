@@ -1,0 +1,36 @@
+language: node_js
+
+cache: npm
+
+node_js:
+  - '8'
+  - '10'
+  - '12'
+
+services:
+  - docker
+
+install:
+  - npm ci
+
+before_install:
+  - docker pull redislabs/redistimeseries:latest
+  - docker run --name redislabs-redistimeseries -it -d -p 127.0.0.1:6379:6379 redislabs/redistimeseries:latest
+  - docker ps -a
+
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+  - mkdir -p coverage
+
+script:
+  - npm run build
+  - npm run test
+
+after_script:
+  - ./cc-test-reporter after-build -t lcov coverage/lcov.info --exit-code $TRAVIS_TEST_RESULT
+
+addons:
+  hosts:
+    - redislabs-redistimeseries
