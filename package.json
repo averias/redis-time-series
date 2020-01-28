@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "test": "jest -i --config jest.config.js",
+    "test": "jest -i --config jest.config.js --coverage",
     "test:watch": "jest -i --config jest.config.js --coverage --watchAll",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",

@@ -14,8 +14,8 @@ install:
   - npm ci
 
 before_install:
-  - docker pull redislabs/redistimeseries:latest
-  - docker run --name redislabs-redistimeseries -it -d -p 127.0.0.1:6379:6379 redislabs/redistimeseries:latest
+  - docker pull redislabs/redistimeseries:edge
+  - docker run --name redislabs-redistimeseries -it -d -p 127.0.0.1:6379:6379 redislabs/redistimeseries:edge
   - docker ps -a
 
 before_script:
@@ -29,7 +29,7 @@ script:
   - npm run test
 
 after_script:
-  - ./cc-test-reporter after-build -t lcov coverage/lcov.info --exit-code $TRAVIS_TEST_RESULT
+  - node_version=$(node -v); if [ ${node_version:1:1} = 12 ]; then ./cc-test-reporter after-build -t lcov ./coverage/lcov.info --exit-code $TRAVIS_TEST_RESULT; fi
 
 addons:
   hosts:
