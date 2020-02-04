@@ -10,7 +10,7 @@ TypeScript and based on [ioredis](https://github.com/luin/ioredis)
 
 ## Requirements
 - Redis server 4.0+ version (recommended version 5.0+)
-- RedisTimeSeries Module installed on Redis server as specified in [Build and Run it yoursef](hhttps://oss.redislabs.com/redistimeseries/#build-and-run-it-yourself)
+- RedisTimeSeries Module installed on Redis server as specified in [Build and Run it yoursef](https://oss.redislabs.com/redistimeseries/#build-and-run-it-yourself)
 
 
 ## Install
@@ -885,7 +885,7 @@ It returns `true` if the client was disconnected successfully, otherwise `false`
 ## Test
 Tests can be run locally with docker. `docker.compose.yml` file will build two services:
 - redis-time-series: node container with the source code and all dependent packages installed, where you can run the tests from
-- redislabs-redistimeseries: redis container built from `redislabs/redistimeseries:edge` image
+- redislabs-redistimeseries: redis container built from `redislabs/redistimeseries:latest` image
 
 You can follow these steps to build the Docker services and run the tests:
 - from the command line run: `docker-compose up --build -d` to build the Docker services
