@@ -14,8 +14,8 @@ install:
   - npm ci
 
 before_install:
-  - docker pull redislabs/redistimeseries:edge
-  - docker run --name redislabs-redistimeseries -it -d -p 127.0.0.1:6379:6379 redislabs/redistimeseries:edge
+  - docker pull redislabs/redistimeseries:latest
+  - docker run --name redislabs-redistimeseries -it -d -p 127.0.0.1:6379:6379 redislabs/redistimeseries:latest
   - docker ps -a
 
 before_script:
