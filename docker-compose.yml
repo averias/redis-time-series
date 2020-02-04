@@ -3,7 +3,7 @@ version: "3"
 services:
   redistimeseries:
     container_name: redislabs-redistimeseries
-    image: redislabs/redistimeseries:edge
+    image: redislabs/redistimeseries:latest
   node:
     container_name: redis-time-series
     build:

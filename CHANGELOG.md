@@ -1,3 +1,7 @@
+## 1.2.2 - 2020-02-04
+
+- used `redislabs/redistimeseries:latest` image as default
+
 ## 1.2.1 - 2020-01-28
 
 - added Travis CI
