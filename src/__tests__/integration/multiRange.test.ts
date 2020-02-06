@@ -250,7 +250,7 @@ test("aggregated query multi range with timestamp range not matching", async () 
         // @ts-ignore
         expect(sample1.getValue()).toEqual(0);
         // @ts-ignore
-        expect(sample1.getTimestamp()).toEqual(start);
+        expect(sample1.getTimestamp()).toEqual(date);
 
         expect(samples.length).toBe(0);
         expect(multiRanges.length).toBe(0);

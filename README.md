@@ -543,8 +543,8 @@ interface MultiRangeResponse {
 if `withLabels` is true, `labels` in `MultiRangeResponse` will be empty.
 
 If some of the keys returned by the filter doesn't include any sample because, for instance, the chosen timestamp range 
-doesn't match `MultiRangeResponse.data` will still include one sample in the array with value = 0 and timestamp = start
-timestamp range include in the query. 
+doesn't match `MultiRangeResponse.data` will still include one sample in the array with value = 0 and timestamp = first
+timestamp found in the time-series which will be equel to 0 if the time-series has no data stored. 
 
 **Example**
 
