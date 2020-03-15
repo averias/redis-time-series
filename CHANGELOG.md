@@ -1,3 +1,7 @@
+## 1.2.3 - 2020-03-15
+
+- update dependencies
+
 ## 1.2.2 - 2020-02-04
 
 - used `redislabs/redistimeseries:latest` image as default
