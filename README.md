@@ -820,8 +820,10 @@ interface InfoResponse {
     lastTimestamp: number;
     retentionTime: number;
     chunkCount: number;
-    maxSamplesPerChunk: number;
+    chunkSize: number;
+    chunkType: string;
     labels: Label[];
+    duplicatePolicy: string;
     sourceKey?: string;
     rules: AggregationByKey;
 }
@@ -855,8 +857,10 @@ const example = async () => {
     console.log(info.retentionTime); // 50000
     console.log(info.sourceKey); // undefined
     console.log(info.labels.shift()); // Label { name: 'label', value: '1' }
-    console.log(info.maxSamplesPerChunk); // 256
+    console.log(info.chunkSize); // 256
     console.log(info.chunkCount); // 1
+    console.log(info.chunkType); // 'uncompressed'
+    console.log(info.duplicatePolicy); // 'LAST'
     console.log(info.rules); // {}
 
     await redisTimeSeries.delete("info");
