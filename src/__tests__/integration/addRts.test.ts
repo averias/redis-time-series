@@ -11,7 +11,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-    await rtsClient.delete("add1", "add2", "add3", "add4", "add5", "add6");
+    await rtsClient.delete("add1", "add2", "add3", "add4", "add5", "add6", "add7", "add8");
     await rtsClient.disconnect();
 });
 
@@ -95,7 +95,7 @@ test("multi add a too old sample fails", async () => {
     const added = await rtsClient.multiAdd([sample40, sample50]);
 
     // @ts-ignore
-    expect(added[0].message).toMatch(/Timestamp cannot be older than the latest timestamp in the time series/);
+    expect(added[0].message).toMatch(/ERR TSDB: Timestamp is older than retention/);
     expect(added[1]).toEqual(now);
 });
 
@@ -106,4 +106,29 @@ test("multi add a non existent key fails", async () => {
 
     // @ts-ignore
     expect(added[0].message).toMatch(/the key is not a TSDB key/);
+});
+
+test("append with valid chunk size and duplicate policy to existing key", async () => {
+    const sample = new Sample("add6", 1000);
+    await rtsClient.add(sample, [], 3000, 8000, "LAST");
+
+    const info = await rtsClient.info("add6");
+
+    expect(info.chunkSize).toBe(4096); // because series already exists
+});
+
+test("append with valid chunk size and duplicate policy to new key", async () => {
+    const sample = new Sample("add7", 1000);
+    await rtsClient.add(sample, [], 3000, 8000, "LAST");
+
+    const info = await rtsClient.info("add7");
+
+    expect(info.chunkSize).toBe(8000);
+});
+
+test("create time series with invalid duplication policy", async () => {
+    const sample = new Sample("add8", 1000);
+    await expect(rtsClient.add(sample, [], 3000, 8000, "HELLO")).rejects.toThrow(
+        "duplicate policy must be either BLOCK, FIRST, LAST, MIN, MAX or SUM, found: HELLO"
+    );
 });

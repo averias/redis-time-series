@@ -41,24 +41,44 @@ export class RedisTimeSeries {
         this.renderFactory = renderFactory;
     }
 
-    public async create(key: string, labels?: Label[], retention?: number): Promise<boolean> {
-        const params: StringNumberArray = this.director.create(key, labels, retention).get();
+    public async create(
+        key: string,
+        labels?: Label[],
+        retention?: number,
+        chunkSize?: number,
+        duplicatePolicy?: string
+    ): Promise<boolean> {
+        const params: StringNumberArray = this.director
+            .create(key, labels, retention, chunkSize, duplicatePolicy)
+            .get();
         const commandData: CommandData = this.provider.getCommandData(CommandName.CREATE, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
         return response === "OK";
     }
 
-    public async alter(key: string, labels?: Label[], retention?: number): Promise<boolean> {
-        const params: StringNumberArray = this.director.alter(key, labels, retention).get();
+    public async alter(
+        key: string,
+        labels?: Label[],
+        retention?: number,
+        chunkSize?: number,
+        duplicatePolicy?: string
+    ): Promise<boolean> {
+        const params: StringNumberArray = this.director.alter(key, labels, retention, chunkSize, duplicatePolicy).get();
         const commandData: CommandData = this.provider.getCommandData(CommandName.ALTER, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
         return response === "OK";
     }
 
-    public async add(sample: Sample, labels?: Label[], retention?: number): Promise<number> {
-        const params: StringNumberArray = this.director.add(sample, labels, retention).get();
+    public async add(
+        sample: Sample,
+        labels?: Label[],
+        retention?: number,
+        chunkSize?: number,
+        onDuplicate?: string
+    ): Promise<number> {
+        const params: StringNumberArray = this.director.add(sample, labels, retention, chunkSize, onDuplicate).get();
         const commandData: CommandData = this.provider.getCommandData(CommandName.ADD, params);
 
         return await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
@@ -75,18 +95,20 @@ export class RedisTimeSeries {
         sample: Sample,
         labels?: Label[],
         retention?: number,
-        uncompressed?: boolean
+        uncompressed?: boolean,
+        chunkSize?: number
     ): Promise<number> {
-        return this.changeBy(CommandName.INCRBY, sample, labels, retention, uncompressed);
+        return this.changeBy(CommandName.INCRBY, sample, labels, retention, uncompressed, chunkSize);
     }
 
     public async decrementBy(
         sample: Sample,
         labels?: Label[],
         retention?: number,
-        uncompressed?: boolean
+        uncompressed?: boolean,
+        chunkSize?: number
     ): Promise<number> {
-        return this.changeBy(CommandName.DECRBY, sample, labels, retention, uncompressed);
+        return this.changeBy(CommandName.DECRBY, sample, labels, retention, uncompressed, chunkSize);
     }
 
     public async createRule(sourceKey: string, destKey: string, aggregation: Aggregation): Promise<boolean> {
@@ -123,6 +145,24 @@ export class RedisTimeSeries {
         return samples;
     }
 
+    public async revRange(
+        key: string,
+        range: TimestampRange,
+        count?: number,
+        aggregation?: Aggregation
+    ): Promise<Array<Sample>> {
+        const params: StringNumberArray = this.director.range(key, range, count, aggregation).get();
+        const commandData: CommandData = this.provider.getCommandData(CommandName.REV_RANGE, params);
+        const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
+
+        const samples: Sample[] = [];
+        for (const sample of response) {
+            samples.push(new Sample(key, Number(sample[1]), sample[0]));
+        }
+
+        return samples;
+    }
+
     public async multiRange(
         range: TimestampRange,
         filters: FilterBuilder,
@@ -134,6 +174,22 @@ export class RedisTimeSeries {
             .multiRange(range, filters, count, aggregation, withLabels)
             .get();
         const commandData: CommandData = this.provider.getCommandData(CommandName.MULTI_RANGE, params);
+        const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
+
+        return this.renderFactory.getMultiRangeRender().render(response);
+    }
+
+    public async multiRevRange(
+        range: TimestampRange,
+        filters: FilterBuilder,
+        count?: number,
+        aggregation?: Aggregation,
+        withLabels?: boolean
+    ): Promise<Array<MultiRangeResponse>> {
+        const params: StringNumberArray = this.director
+            .multiRange(range, filters, count, aggregation, withLabels)
+            .get();
+        const commandData: CommandData = this.provider.getCommandData(CommandName.MULTI_REV_RANGE, params);
         const response = await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();
 
         return this.renderFactory.getMultiRangeRender().render(response);
@@ -202,9 +258,12 @@ export class RedisTimeSeries {
         sample: Sample,
         labels: Label[] = [],
         retention?: number,
-        uncompressed?: boolean
+        uncompressed?: boolean,
+        chunkSize?: number
     ): Promise<number> {
-        const params: StringNumberArray = this.director.changeBy(sample, labels, retention, uncompressed).get();
+        const params: StringNumberArray = this.director
+            .changeBy(sample, labels, retention, uncompressed, chunkSize)
+            .get();
         const commandData: CommandData = this.provider.getCommandData(command, params);
 
         return await this.invoker.setCommand(new TimeSeriesCommand(commandData, this.receiver)).run();

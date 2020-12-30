@@ -81,8 +81,12 @@ test("info response render without source key", () => {
         80000,
         "chunkCount",
         1,
-        "maxSamplesPerChunk",
+        "chunkSize",
         360,
+        "chunkType",
+        "compressed",
+        "duplicatePolicy",
+        "LAST",
         "labels",
         [
             ["label1", 10],
@@ -103,7 +107,9 @@ test("info response render without source key", () => {
     expect(rendered.lastTimestamp).toBe(date);
     expect(rendered.retentionTime).toBe(80000);
     expect(rendered.chunkCount).toBe(1);
-    expect(rendered.maxSamplesPerChunk).toBe(360);
+    expect(rendered.chunkSize).toBe(360);
+    expect(rendered.chunkType).toBe("compressed");
+    expect(rendered.duplicatePolicy).toBe("LAST");
 
     const labels = rendered.labels;
     expect(labels.shift()).toEqual(new Label("label1", 10));
@@ -129,8 +135,12 @@ test("info response render with source key", () => {
         80000,
         "chunkCount",
         1,
-        "maxSamplesPerChunk",
+        "chunkSize",
         360,
+        "chunkType",
+        "compressed",
+        "duplicatePolicy",
+        "LAST",
         "labels",
         [
             ["label1", 10],
@@ -152,7 +162,9 @@ test("info response render with source key", () => {
     expect(rendered.lastTimestamp).toBe(date);
     expect(rendered.retentionTime).toBe(80000);
     expect(rendered.chunkCount).toBe(1);
-    expect(rendered.maxSamplesPerChunk).toBe(360);
+    expect(rendered.chunkSize).toBe(360);
+    expect(rendered.chunkType).toBe("compressed");
+    expect(rendered.duplicatePolicy).toBe("LAST");
 
     const labels = rendered.labels;
     expect(labels.shift()).toEqual(new Label("label1", 10));

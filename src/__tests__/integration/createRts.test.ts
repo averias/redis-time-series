@@ -7,7 +7,17 @@ const factory = new RedisTimeSeriesFactory(testOptions);
 const rtsClient = factory.create();
 
 afterAll(async () => {
-    await rtsClient.delete("create1", "create2", "create3", "create4", "create5");
+    await rtsClient.delete(
+        "create1",
+        "create2",
+        "create3",
+        "create4",
+        "create5",
+        "create6",
+        "create7",
+        "create8",
+        "create9"
+    );
     await rtsClient.disconnect();
 });
 
@@ -74,6 +84,15 @@ test("create time series successfully with empty labels array", async () => {
     expect(info.labels.length).toEqual(0);
 });
 
+test("create time series successfully with valid chunk size and duplicate policy", async () => {
+    const created = await rtsClient.create("create6", [], 3000, 8000, "FIRST");
+    expect(created).toEqual(true);
+
+    const info = await rtsClient.info("create6");
+    expect(info.chunkSize).toEqual(8000);
+    expect(info.duplicatePolicy).toEqual("first");
+});
+
 test("create duplicate time series fails", async () => {
     const label = new Label("cpu2", "17");
     await expect(rtsClient.create("create1", [label])).rejects.toThrow();
@@ -81,7 +100,21 @@ test("create duplicate time series fails", async () => {
 
 test("create time series with negative retention fails", async () => {
     const label = new Label("cpu1", "15");
-    await expect(rtsClient.create("create4", [label], -10000)).rejects.toThrow(
+    await expect(rtsClient.create("create7", [label], -10000)).rejects.toThrow(
         "retention must be positive integer, found: -10000"
+    );
+});
+
+test("create time series with invalid chunk size", async () => {
+    const label = new Label("cpu1", "15");
+    await expect(rtsClient.create("create8", [label], undefined, -10000)).rejects.toThrow(
+        "chunkSize must be positive integer, found: -10000"
+    );
+});
+
+test("create time series with invalid duplication policy", async () => {
+    const label = new Label("cpu1", "15");
+    await expect(rtsClient.create("create9", [label], undefined, undefined, "HELLO")).rejects.toThrow(
+        "duplicate policy must be either BLOCK, FIRST, LAST, MIN, MAX or SUM, found: HELLO"
     );
 });
