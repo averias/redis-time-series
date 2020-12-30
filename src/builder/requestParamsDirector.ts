@@ -12,15 +12,33 @@ class RequestParamsDirector {
         this.paramsBuilder = paramsBuilder;
     }
 
-    public create(key: string, labels?: Label[], retention?: number): RequestParamsBuilder {
+    public create(
+        key: string,
+        labels?: Label[],
+        retention?: number,
+        chunkSize?: number,
+        duplicatePolicy?: string
+    ): RequestParamsBuilder {
         return this.paramsBuilder
             .addKey(key)
             .addRetention(retention)
-            .addLabels(labels);
+            .addLabels(labels)
+            .addChunkSize(chunkSize)
+            .addDuplicatePolicy(duplicatePolicy);
     }
 
-    public alter(key: string, labels?: Label[], retention?: number): RequestParamsBuilder {
-        const builder = this.paramsBuilder.addKey(key).addRetention(retention);
+    public alter(
+        key: string,
+        labels?: Label[],
+        retention?: number,
+        chunkSize?: number,
+        duplicatePolicy?: string
+    ): RequestParamsBuilder {
+        const builder = this.paramsBuilder
+            .addKey(key)
+            .addRetention(retention)
+            .addChunkSize(chunkSize)
+            .addDuplicatePolicy(duplicatePolicy);
         // if labels is an empty array it means deleting previous labels
         if (labels != null && labels.length === 0) {
             return builder.removeLabels();
@@ -29,11 +47,19 @@ class RequestParamsDirector {
         return builder.addLabels(labels);
     }
 
-    public add(sample: Sample, labels?: Label[], retention?: number): RequestParamsBuilder {
+    public add(
+        sample: Sample,
+        labels?: Label[],
+        retention?: number,
+        chunkSize?: number,
+        onDuplicate?: string
+    ): RequestParamsBuilder {
         return this.paramsBuilder
             .addSample(sample)
             .addRetention(retention)
-            .addLabels(labels);
+            .addLabels(labels)
+            .addChunkSize(chunkSize)
+            .addOnDuplicate(onDuplicate);
     }
 
     public multiAdd(samples: Sample[]): RequestParamsBuilder {
@@ -44,13 +70,15 @@ class RequestParamsDirector {
         sample: Sample,
         labels?: Label[],
         retention?: number,
-        uncompressed?: boolean
+        uncompressed?: boolean,
+        chunkSize?: number
     ): RequestParamsBuilder {
         return this.paramsBuilder
             .addSampleWithOptionalTimeStamp(sample)
             .addRetention(retention)
             .addLabels(labels)
-            .addUncompressed(uncompressed);
+            .addUncompressed(uncompressed)
+            .addChunkSize(chunkSize);
     }
 
     public createRule(sourceKey: string, destKey: string, aggregation: Aggregation): RequestParamsBuilder {

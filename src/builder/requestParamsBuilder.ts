@@ -49,6 +49,43 @@ export class RequestParamsBuilder {
         return this;
     }
 
+    public addChunkSize(chunkSize?: number): RequestParamsBuilder {
+        if (chunkSize != null) {
+            if (chunkSize < 0) {
+                throw new Error(`chunkSize must be positive integer, found: ${chunkSize}`);
+            }
+            this.params.push(CommandKeyword.CHUNK_SIZE, chunkSize);
+        }
+
+        return this;
+    }
+
+    public addDuplicatePolicy(policy?: string): RequestParamsBuilder {
+        if (policy != null) {
+            if (![`BLOCK`, `FIRST`, `LAST`, `MIN`, `MAX`, `SUM`].includes(policy)) {
+                throw new Error(
+                    `duplicate policy must be either BLOCK, FIRST, LAST, MIN, MAX or SUM, found: ${policy}`
+                );
+            }
+            this.params.push(CommandKeyword.DUPLICATE_POLICY, policy);
+        }
+
+        return this;
+    }
+
+    public addOnDuplicate(policy?: string): RequestParamsBuilder {
+        if (policy != null) {
+            if (![`BLOCK`, `FIRST`, `LAST`, `MIN`, `MAX`, `SUM`].includes(policy)) {
+                throw new Error(
+                    `duplicate policy must be either BLOCK, FIRST, LAST, MIN, MAX or SUM, found: ${policy}`
+                );
+            }
+            this.params.push(CommandKeyword.ON_DUPLICATE, policy);
+        }
+
+        return this;
+    }
+
     public removeLabels(): RequestParamsBuilder {
         this.params.push(CommandKeyword.LABELS);
         return this;

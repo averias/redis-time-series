@@ -6,12 +6,12 @@ import { AggregationByKey } from "./interface/aggregationByKey";
 export class InfoResponseRender {
     public render(response: any[]): InfoResponse {
         const labels: Label[] = [];
-        for (const label of response[15]) {
+        for (const label of response[19]) {
             labels.push(new Label(label[0], label[1]));
         }
 
         const rules: AggregationByKey = {};
-        for (const rule of response[19]) {
+        for (const rule of response[23]) {
             rules[rule[0]] = new Aggregation(rule[2], rule[1]);
         }
 
@@ -22,13 +22,16 @@ export class InfoResponseRender {
             lastTimestamp: response[7],
             retentionTime: response[9],
             chunkCount: response[11],
-            maxSamplesPerChunk: response[13],
+            chunkSize: response[13],
+            chunkType: response[15],
+            duplicatePolicy: response[17],
             labels: labels,
+            sourceKey: response[21],
             rules: rules
         };
 
-        if (response[17]) {
-            info["sourceKey"] = response[17];
+        if (response[21]) {
+            info["sourceKey"] = response[21];
         }
 
         return info;
