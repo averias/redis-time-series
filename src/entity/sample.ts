@@ -1,11 +1,36 @@
 import { CommandKeyword } from "../enum/commandKeyword";
 import { StringNumberArray } from "../index";
 
+/**
+ * A `key`-`value`-`timestamp` object
+ */
 export class Sample {
     private key: string;
     private value: number;
     private timestamp: string | number;
 
+    /**
+     * Creates a Sample object
+     *
+     * @param key Key name for timeseries
+     * @param value The value of the sample
+     * @param timestamp The timestamp of the sample in ms
+     * @returns the created Sample object
+     *
+     * @remarks
+     * ```
+     *     // Example
+     *     const tsSample = new Sample('temperature:2:32', 25, 1609682633000);
+     *
+     *     tsSample.getKey(); // 'temperature:2:32'
+     *     tsSample.setKey('temperature:5:15'); // Sample('temperature:5:15', 25, 1609682633000)
+     *     tsSample.getValue(); // 25
+     *     tsSample.setValue(27); // Sample('temperature:5:15', 27, 1609682633000)
+     *     tsSample.getTimestamp(); // 1609682633000
+     *     tsSample.setTimestamp(1609682634000); // Sample('temperature:5:15', 27, 1609682634000)
+     *     tsSample.flatten(); // ['temperature:5:15', 1609682634000, 27]
+     * ```
+     */
     constructor(key: string, value: number, timestamp?: number) {
         this.setKey(key);
         this.setValue(value);

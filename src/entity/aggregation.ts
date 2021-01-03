@@ -2,10 +2,31 @@ import { AggregationType } from "../enum/aggregationType";
 import { CommandKeyword } from "../enum/commandKeyword";
 import { StringNumberArray } from "../index";
 
+/**
+ * A `aggregation-type`-`timeBucket` object
+ */
 export class Aggregation {
     private readonly type: string;
     private readonly timeBucketInMs: number;
 
+    /**
+     * Creates a new Aggregation object
+     *
+     * @param type The type of aggregation e.g. AggregationType.AVG | AggregationType.SUM etc
+     * @param timeBucketInMs The time bucket for the aggregation
+     *
+     * @remarks
+     * // Example
+     * ```
+     * const aggregation = new Aggregation(AggregationType.AVG, 1000);
+     * const timestampRange = new TimestampRange(date, date + 10000);
+     * const samples = await redisTimeSeries.range("range1", timestampRange, undefined, aggregation);
+     *
+     * aggregation.getType() // avg
+     * aggregation.getTimeBucketInMs() // 1000
+     * aggregation.flatten() // ['AGGREGATION', 'avg', 1000]
+     * ```
+     */
     constructor(type: string, timeBucketInMs: number) {
         this.type = this.validateType(type);
         this.timeBucketInMs = this.validateTimeBucket(timeBucketInMs);
