@@ -1,6 +1,8 @@
 import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
 import { Label } from "./entity/label";
 import { Sample } from "./entity/sample";
+import { Count } from "./entity/count";
+import { TimestampRange } from "./entity/timestampRange";
 import { Aggregation } from "./entity/aggregation";
 import { FilterOperator } from "./enum/filterOperator";
 import { AggregationType } from "./enum/aggregationType";
@@ -14,6 +16,8 @@ export {
     RedisTimeSeriesFactory,
     Label,
     Sample,
+    Count,
+    TimestampRange,
     Aggregation,
     AggregationType,
     FilterBuilder,

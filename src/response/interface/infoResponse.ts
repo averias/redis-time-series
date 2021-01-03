@@ -8,8 +8,10 @@ export interface InfoResponse {
     lastTimestamp: number;
     retentionTime: number;
     chunkCount: number;
-    maxSamplesPerChunk: number;
+    chunkSize: number;
+    chunkType: string;
     labels: Label[];
+    duplicatePolicy: string;
     sourceKey?: string;
     rules: AggregationByKey;
 }

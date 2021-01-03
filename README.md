@@ -74,7 +74,15 @@ All of them return a `Promise` if the command was executed successfully, otherwi
 Creates a new time-series with an optional array of labels and optional retention. If the time-series `key` already
 exists, an `Error` will be thrown.
 
-`redisTimeSeries.create(key: string, labels?: Label[], retention?: number): Promise<boolean>`
+```
+redisTimeSeries.create(
+    key: string, 
+    labels?: Label[], 
+    retention?: number, 
+    chunkSize?: number,
+    duplicatePolicy?: string
+): Promise<boolean>
+```
 
 **Label**
 
@@ -117,7 +125,15 @@ More info: [TS.CREATE](https://oss.redislabs.com/redistimeseries/commands/#tscre
 ### `Alter`
 Updates the retention and labels of an existing time-series. Same params as `create`.
 
-`redisTimeSeries.alter(key: string, labels?: Label[], retention?: number): Promise<boolean>`
+```
+redisTimeSeries.alter(    
+    key: string, 
+    labels?: Label[], 
+    retention?: number, 
+    chunkSize?: number,
+    duplicatePolicy?: string
+): Promise<boolean>
+```
 
 - if time-series key doesn't exist an `Error` is thrown
 - only provided params will be updated
@@ -174,7 +190,15 @@ More info: [TS.ALTER](https://oss.redislabs.com/redistimeseries/commands/#tsalte
 ### `Add`
 Appends, or first creates a time-series and then appends, a new value to the time-series.
 
-`redisTimeSeries.add(sample: Sample, labels?: Label[], retention?: number): Promise<number>`
+```
+redisTimeSeries.add(
+    sample: Sample, 
+    labels?: Label[], 
+    retention?: number,
+    chunkSize?: number,
+    onDuplicate?: string
+): Promise<number>
+```
 
 If this command is used to add data to an existing time-series, retentionTime and labels are ignored.
 
@@ -442,7 +466,7 @@ More info:
 - [TS.CREATERULE](https://oss.redislabs.com/redistimeseries/commands/#tscreaterule)
 - [TS.DELETERULE](https://oss.redislabs.com/redistimeseries/commands/#tsdeleterule)
 
-### `Range`
+### `Range/ RevRange`
 It queries a timestamp range.
 
 `redisTimeSeries.range(key: string, range: TimestampRange, count?: number, aggregation?: Aggregation): Promise<Array<Sample>>`
@@ -503,7 +527,7 @@ example();
 
 More info: [TS.RANGE](https://oss.redislabs.com/redistimeseries/commands/#tsrange)
 
-### `MultiRange`
+### `MultiRange/MultiRevRange`
 It queries a timestamp range across multiple time-series by using filters.
 
 `redisTimeSeries.multiRange(range: TimestampRange, filters: FilterBuilder, count?: number, aggregation?: Aggregation, withLabels?: boolean): Promise<Array<MultiRangeResponse>>`
@@ -796,8 +820,10 @@ interface InfoResponse {
     lastTimestamp: number;
     retentionTime: number;
     chunkCount: number;
-    maxSamplesPerChunk: number;
+    chunkSize: number;
+    chunkType: string;
     labels: Label[];
+    duplicatePolicy: string;
     sourceKey?: string;
     rules: AggregationByKey;
 }
@@ -831,8 +857,10 @@ const example = async () => {
     console.log(info.retentionTime); // 50000
     console.log(info.sourceKey); // undefined
     console.log(info.labels.shift()); // Label { name: 'label', value: '1' }
-    console.log(info.maxSamplesPerChunk); // 256
+    console.log(info.chunkSize); // 256
     console.log(info.chunkCount); // 1
+    console.log(info.chunkType); // 'uncompressed'
+    console.log(info.duplicatePolicy); // 'LAST'
     console.log(info.rules); // {}
 
     await redisTimeSeries.delete("info");
