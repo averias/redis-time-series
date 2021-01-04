@@ -8,6 +8,31 @@
 A Javascript client for [RedisLab/RedisTimeSeries Module](https://oss.redislabs.com/redistimeseries/) implemented in 
 TypeScript and based on [ioredis](https://github.com/luin/ioredis)
 
+- [Redis-Time-Series](#redis-time-series)
+  - [Requirements](#requirements)
+  - [Install](#install)
+  - [Usage](#usage)
+  - [Commands](#commands)
+    - [`.create`](#create)
+    - [`.alter`](#alter)
+    - [`.add`](#add)
+    - [`.multiAdd`](#multiadd)
+    - [`.incrementBy/.decrementBy`](#incrementbydecrementby)
+    - [`.createRule/.deleteRule`](#createruledeleterule)
+    - [`.range/.revRange`](#rangerevrange)
+    - [`.multiRange/multiRevRange`](#multirangemultirevrange)
+    - [`.get`](#get)
+    - [`.multiGet`](#multiget)
+    - [`.queryIndex`](#queryindex)
+    - [`.info`](#info)
+    - [`.expire`](#expire)
+    - [`.delete`](#delete)
+    - [`.deleteAll`](#deleteall)
+    - [`.reset`](#reset)
+    - [`.disconnect`](#disconnect)
+  - [Testing](#testing)
+  - [License](#license)
+
 ## Requirements
 - Redis server 4.0+ version (recommended version 5.0+)
 - RedisTimeSeries Module installed on Redis server as specified in [Build and Run it yourself](https://oss.redislabs.com/redistimeseries/#build-and-run-it-yourself)
@@ -71,8 +96,8 @@ Take a look at the full [list of connections params](https://github.com/luin/ior
 for IORedis.
 
 ## Commands
-After creating a `RedisTimeSeries` from `RedisTimeSeries::create` you can issue the following async commands. 
-All of them return a `Promise` if the command was executed successfully, otherwise, an `Error` will be thrown.
+After creating a `RedisTimeSeries` from `RedisTimeSeries::create` you can issue the following async commands. All of them return a `Promise` if the command was executed successfully, otherwise, an `Error` will be thrown.
+
 
 ### `.create`
 Creates a new time-series with an optional array of labels and optional retention. If the time-series `key` already
@@ -362,7 +387,7 @@ example();
 More info: [TS.MADD](https://oss.redislabs.com/redistimeseries/commands/#tsmadd)
 
 
-### `.incrementBy / .decrementBy`
+### `.incrementBy/.decrementBy`
 Increment or decrement the latest value in a time-series
 
 `redisTimeSeries.incrementBy(sample: Sample, labels?: Label[], retention?: number, uncompressed?: boolean): Promise<number>`
@@ -490,7 +515,7 @@ More info:
 - [TS.CREATERULE](https://oss.redislabs.com/redistimeseries/commands/#tscreaterule)
 - [TS.DELETERULE](https://oss.redislabs.com/redistimeseries/commands/#tsdeleterule)
 
-### `.range/ .revRange`
+### `.range/.revRange`
 It queries a timestamp range.
 
 `redisTimeSeries.range(key: string, range: TimestampRange, count?: number, aggregation?: Aggregation): Promise<Array<Sample>>`
@@ -904,6 +929,12 @@ example();
 ```
 
 More info: [TS.INFO](https://oss.redislabs.com/redistimeseries/commands/#tsinfo)
+
+### `.expire`
+Expires a time-series `key` by using Redis `expire` command.
+
+`redisTimeSeries.expire(key: string, seconds: number): Promise<boolean>`
+- `seconds` must be an integer or an exception will be thrown
 
 ### `.delete`
 Deletes a time-series `key` by using Redis `del` command.

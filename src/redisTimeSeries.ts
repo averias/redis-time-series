@@ -12,6 +12,7 @@ import { CommandProvider } from "./command/commandProvider";
 import { CommandInvoker } from "./command/commandInvoker";
 import { CommandReceiver } from "./command/commandReceiver";
 import { TimeSeriesCommand } from "./command/timeSeriesCommand";
+import { ExpireCommand } from "./command/expireCommand";
 import { DeleteCommand } from "./command/deleteCommand";
 import { DeleteAllCommand } from "./command/deleteAllCommand";
 import { MultiAddResponseError } from "./response/type/multiAddResponseError";
@@ -43,29 +44,29 @@ export class RedisTimeSeries {
     /**
      * Create a new time-series.
      *
-     * Docs: [TS.CREATE](https://oss.redislabs.com/redistimeseries/commands/#tscreate)
+     * Docs: [TS.CREATE](https://oss.redislabs.com/redistimeseries/commands/#tscreate).
      *
-     * @param key Key name for timeseries
+     * @param key Key name for timeseries.
      * @param labels Array of Label objects (label-value pairs) that represent metadata labels of the key.
-     * Use `new Label('label', value)` to create a new Label object
+     * Use `new Label('label', value)` to create a new Label object.
      * @param retention Maximum age for samples compared to last event time (in milliseconds).
      * Default: The global retention secs configuration of the database (by default, 0 ).
-     * When set to 0, the series is not trimmed at all
+     * When set to 0, the series is not trimmed at all.
      * @param chunkSize Amount of memory, in bytes, allocated for data. Default: 4000.
      * @param duplicatePolicy Configure what to do on duplicate sample.
-     * https://oss.redislabs.com/redistimeseries/configuration/#DUPLICATE_POLICY
+     * See more on [DUPLICATE_POLICY](https://oss.redislabs.com/redistimeseries/configuration/#DUPLICATE_POLICY).
      *
      * When this is not set, the server-wide default will be used.
      *
-     * - BLOCK - an error will occur for any out of order sample
-     * - FIRST - ignore the new value
-     * - LAST - override with latest value
-     * - MIN - only override if the value is lower than the existing value
-     * - MAX - only override if the value is higher than the existing value
+     * - BLOCK - an error will occur for any out of order sample.
+     * - FIRST - ignore the new value.
+     * - LAST - override with latest value.
+     * - MIN - only override if the value is lower than the existing value.
+     * - MAX - only override if the value is higher than the existing value.
      * @param uncompressed Cince version 1.2, both timestamps and values are compressed by default.
      * Adding this flag will keep data in an uncompressed form.
      * Compression not only saves memory but usually improve performance due to lower number of memory accesses.
-     * @returns `true` if timeseries created successfully. `false` otherwise
+     * @returns `true` if timeseries created successfully. `false` otherwise.
      *
      * @remarks
      * Complexity -- O(1)
@@ -88,31 +89,31 @@ export class RedisTimeSeries {
     }
 
     /**
-     * Update the retention, labels of an existing key
+     * Update the retention, labels of an existing key.
      *
-     * Docs: [TS.ALTER](https://oss.redislabs.com/redistimeseries/commands/#tsalter)
+     * Docs: [TS.ALTER](https://oss.redislabs.com/redistimeseries/commands/#tsalter).
      *
      * @param key Key name for timeseries
      * @param labels Array of Label objects (label-value pairs) that represent metadata labels of the key.
-     * Use `new Label('label', value)` to create a new Label object
+     * Use `new Label('label', value)` to create a new Label object.
      * @param retention Maximum age for samples compared to last event time (in milliseconds).
      * Default: The global retention secs configuration of the database (by default, 0 ).
-     * When set to 0, the series is not trimmed at all
+     * When set to 0, the series is not trimmed at all.
      * @param chunkSize Amount of memory, in bytes, allocated for data. Default: 4000.
      * @param duplicatePolicy Configure what to do on duplicate sample.
-     * https://oss.redislabs.com/redistimeseries/configuration/#DUPLICATE_POLICY
+     * See more on [DUPLICATE_POLICY](https://oss.redislabs.com/redistimeseries/configuration/#DUPLICATE_POLICY)
      *
      * When this is not set, the server-wide default will be used.
      *
-     * - BLOCK - an error will occur for any out of order sample
-     * - FIRST - ignore the new value
-     * - LAST - override with latest value
-     * - MIN - only override if the value is lower than the existing value
-     * - MAX - only override if the value is higher than the existing value
+     * - BLOCK - an error will occur for any out of order sample.
+     * - FIRST - ignore the new value.
+     * - LAST - override with latest value.
+     * - MIN - only override if the value is lower than the existing value.
+     * - MAX - only override if the value is higher than the existing value.
      * @param uncompressed Since version 1.2, both timestamps and values are compressed by default.
      * Adding this flag will keep data in an uncompressed form.
      * Compression not only saves memory but usually improve performance due to lower number of memory accesses.
-     * @returns `true` if timeseries altered successfully. `false` otherwise
+     * @returns `true` if timeseries altered successfully. `false` otherwise.
      */
     public async alter(
         key: string,
@@ -134,7 +135,7 @@ export class RedisTimeSeries {
     /**
      * Append (or create and append) a new sample to the series.
      *
-     * Docs: [TS.ADD](https://oss.redislabs.com/redistimeseries/commands/#tsadd)
+     * Docs: [TS.ADD](https://oss.redislabs.com/redistimeseries/commands/#tsadd).
      *
      * @param sample The sample to add to the timeseries. Use `new Sample(key, timestamp, value)` to create it
      * @param labels Array of Label objects (label-value pairs) that represent metadata labels of the key.
@@ -143,20 +144,20 @@ export class RedisTimeSeries {
      * Default: The global retention secs configuration of the database (by default, 0 ).
      * When set to 0, the series is not trimmed at all
      * @param chunkSize Amount of memory, in bytes, allocated for data. Default: 4000.
-     * @param duplicatePolicy Configure what to do on duplicate sample.
-     * https://oss.redislabs.com/redistimeseries/configuration/#DUPLICATE_POLICY
+     * @param onDuplicate Configure what to do on duplicate sample.
+     * See more on [DUPLICATE_POLICY](https://oss.redislabs.com/redistimeseries/configuration/#DUPLICATE_POLICY)
      *
      * When this is not set, the server-wide default will be used.
      *
-     * - BLOCK - an error will occur for any out of order sample
-     * - FIRST - ignore the new value
-     * - LAST - override with latest value
-     * - MIN - only override if the value is lower than the existing value
-     * - MAX - only override if the value is higher than the existing value
+     * - BLOCK - an error will occur for any out of order sample.
+     * - FIRST - ignore the new value.
+     * - LAST - override with latest value.
+     * - MIN - only override if the value is lower than the existing value.
+     * - MAX - only override if the value is higher than the existing value.
      * @param uncompressed Since version 1.2, both timestamps and values are compressed by default.
      * Adding this flag will keep data in an uncompressed form.
      * Compression not only saves memory but usually improve performance due to lower number of memory accesses.
-     * @returns the timestamp of the added Sample
+     * @returns The timestamp of the added Sample.
      *
      * @remarks
      * Complexity:
@@ -238,14 +239,14 @@ export class RedisTimeSeries {
     /**
      * Creates a new sample that decrements the latest sample's value.
      *
-     * Docs: [TS.DECRBY](https://oss.redislabs.com/redistimeseries/commands/#tsincrbytsdecrby)
+     * Docs: [TS.DECRBY](https://oss.redislabs.com/redistimeseries/commands/#tsincrbytsdecrby).
      *
-     * @param sample The sample to add to the timeseries. Use `new Sample(key, timestamp, value)` to create it
+     * @param sample The sample to add to the timeseries. Use `new Sample(key, timestamp, value)` to create it.
      * @param labels Array of Label objects (label-value pairs) that represent metadata labels of the key.
-     * Use `new Label('label', value)` to create a new Label object
+     * Use `new Label('label', value)` to create a new Label object.
      * @param retention Maximum age for samples compared to last event time (in milliseconds).
      * Default: The global retention secs configuration of the database (by default, 0 ).
-     * When set to 0, the series is not trimmed at all
+     * When set to 0, the series is not trimmed at all.
      * @param uncompressed Since version 1.2, both timestamps and values are compressed by default.
      * Adding this flag will keep data in an uncompressed form.
      * Compression not only saves memory but usually improve performance due to lower number of memory accesses.
@@ -271,13 +272,13 @@ export class RedisTimeSeries {
     /**
      * Create a compaction rule.
      *
-     * Docs: [TS.CREATERULE](https://oss.redislabs.com/redistimeseries/commands/#tscreaterule)
+     * Docs: [TS.CREATERULE](https://oss.redislabs.com/redistimeseries/commands/#tscreaterule).
      *
-     * @param sourceKey Key name for source time series
-     * @param destKey Key name for destination time series
+     * @param sourceKey Key name for source time series.
+     * @param destKey Key name for destination time series.
      * @param aggregation Aggregation Object -- avg, sum, min, max, range, count, first, last, std.p, std.s, var.p, var.s.
      * Create with `new Aggregation(type,timeBucketinMs)`
-     * @returns `true` if rule created. `false` otherwise
+     * @returns `true` if rule created. `false` otherwise.
      *
      * @remarks
      * - Currently, only new samples that are added into the source series after creation of the rule will be aggregated.
@@ -311,16 +312,16 @@ export class RedisTimeSeries {
     /**
      * Query a range in the forward direction.
      *
-     * Docs: [TS.RANGE](https://oss.redislabs.com/redistimeseries/commands/#tsrangetsrevrange)
+     * Docs: [TS.RANGE](https://oss.redislabs.com/redistimeseries/commands/#tsrangetsrevrange).
      *
-     * @param key Key name for timeseries
+     * @param key Key name for timeseries.
      * @param range A TimestampRange object. Contains Start and End timestamps for the range query.
-     * Create with `new TimestampRange(from, to)`. Leave both params `from` and `to` as `undefined` i.e. `new TimestampRange()`
-     * to express the minimum possible timestamp (`-`) and the maximum possible timestamp (`+`)
+     * Create with `new TimestampRange(from, to)`. Leave both params `from` and `to` as `undefined` i.e. `new TimestampRange()`.
+     * to express the minimum possible timestamp (`-`) and the maximum possible timestamp (`+`).
      * @param count Maximum number of returned results
      * @param aggregation Aggregation Object -- avg, sum, min, max, range, count, first, last, std.p, std.s, var.p, var.s.
-     * Create with `new Aggregation(type,timeBucketinMs)`
-     * @returns An array of `Sample` objects containing the timestamp and value
+     * Create with `new Aggregation(type,timeBucketinMs)`.
+     * @returns An array of `Sample` objects containing the timestamp and value.
      *
      * @remarks
      * Complexity:
@@ -351,16 +352,16 @@ export class RedisTimeSeries {
     /**
      * Query a range in the reverse direction.
      *
-     * Docs: [TS.REVRANGE](https://oss.redislabs.com/redistimeseries/commands/#tsrangetsrevrange)
+     * Docs: [TS.REVRANGE](https://oss.redislabs.com/redistimeseries/commands/#tsrangetsrevrange).
      *
      * @param key Key name for timeseries
      * @param range A TimestampRange object. Contains Start and End timestamps for the range query.
-     * Create with `new TimestampRange(from, to)`. Leave both params `from` and `to` as `undefined` i.e. `new TimestampRange()`
-     * to express the minimum possible timestamp (`-`) and the maximum possible timestamp (`+`)
-     * @param count Maximum number of returned results
+     * Create with `new TimestampRange(from, to)`. Leave both params `from` and `to` as `undefined` i.e. `new TimestampRange()`.
+     * to express the minimum possible timestamp (`-`) and the maximum possible timestamp (`+`).
+     * @param count Maximum number of returned results.
      * @param aggregation Aggregation Object -- avg, sum, min, max, range, count, first, last, std.p, std.s, var.p, var.s.
-     * Create with `new Aggregation(type,timeBucketinMs)`
-     * @returns An array of `Sample` objects containing the timestamp and value
+     * Create with `new Aggregation(type,timeBucketinMs)`.
+     * @returns An array of `Sample` objects containing the timestamp and value.
      *
      * @remarks
      * Complexity:
@@ -391,7 +392,7 @@ export class RedisTimeSeries {
     /**
      * Query a range across multiple time-series by filters in the forward direction.
      *
-     * Docs: [TS.MRANGE](https://oss.redislabs.com/redistimeseries/commands/#tsmrangetsmrevrange)
+     * Docs: [TS.MRANGE](https://oss.redislabs.com/redistimeseries/commands/#tsmrangetsmrevrange).
      *
      * @param range A TimestampRange object. Contains Start and End timestamps for the range query.
      * Create with `new TimestampRange(from, to)`. Leave both params `from` and `to` as `undefined` i.e. `new TimestampRange()`
@@ -399,15 +400,13 @@ export class RedisTimeSeries {
      * @param filters A filters object. Create with `new FilterBuilder(label, value)`. Chain methods to make more complex filters.
      * See docs on [filtering](https://oss.redislabs.com/redistimeseries/commands/#filtering)
      *
-     * Examples:
+     * Example:
      *
-     * Filter timeseries with labels `device=raspberry_23` and `sensor=temperature_1`:
      * ```ts
-     * const filter = new FilterBuilder("device", "raspberry_23").equal("sensor", "temperature_1");
+     *  // Filter timeseries with labels `device=raspberry_23` and `sensor=temperature_1`:
+     *  const filter = new FilterBuilder("device", "raspberry_23").equal("sensor", "temperature_1");
      * ```
-     * Methods that can be chained: `equal`,`notEqual`, `exists`, `notExists`, `in`, `notIn`
-     *
-     * See README for more examples on filter usage
+     * Methods that can be chained: `equal`,`notEqual`, `exists`, `notExists`, `in`, `notIn`. See README for more examples on filter usage.
      *
      * @param count Maximum number of returned results per time-series
      * @param aggregation Aggregation Object -- avg, sum, min, max, range, count, first, last, std.p, std.s, var.p, var.s.
@@ -435,30 +434,28 @@ export class RedisTimeSeries {
     /**
      * Query a range across multiple time-series by filters in the reverse direction.
      *
-     * Docs: [TS.MREVRANGE](https://oss.redislabs.com/redistimeseries/commands/#tsmrangetsmrevrange)
+     * Docs: [TS.MREVRANGE](https://oss.redislabs.com/redistimeseries/commands/#tsmrangetsmrevrange).
      *
      * @param range A TimestampRange object. Contains Start and End timestamps for the range query.
-     * Create with `new TimestampRange(from, to)`. Leave both params `from` and `to` as `undefined` i.e. `new TimestampRange()`
-     * to express the minimum possible timestamp (`-`) and the maximum possible timestamp (`+`)
+     * Create with `new TimestampRange(from, to)`. Leave both params `from` and `to` as `undefined` i.e. `new TimestampRange()`.
+     * to express the minimum possible timestamp (`-`) and the maximum possible timestamp (`+`).
      * @param filters A filters object. Create with `new FilterBuilder(label, value)`. Chain methods to make more complex filters.
-     * See docs on [filtering](https://oss.redislabs.com/redistimeseries/commands/#filtering)
+     * See docs on [filtering](https://oss.redislabs.com/redistimeseries/commands/#filtering).
      *
      * Examples:
      *
-     * Filter timeseries with labels `device=raspberry_23` and `sensor=temperature_1`:
      * ```ts
-     * const filter = new FilterBuilder("device", "raspberry_23").equal("sensor", "temperature_1");
+     *  // Filter timeseries with labels `device=raspberry_23` and `sensor=temperature_1`:
+     *  const filter = new FilterBuilder("device", "raspberry_23").equal("sensor", "temperature_1");
      * ```
-     * Methods that can be chained: `equal`,`notEqual`, `exists`, `notExists`, `in`, `notIn`
+     * Methods that can be chained: `equal`,`notEqual`, `exists`, `notExists`, `in`, `notIn`. See README for more examples on filter usage.
      *
-     * See README for more examples on filter usage
-     *
-     * @param count Maximum number of returned results per time-series
+     * @param count Maximum number of returned results per time-series.
      * @param aggregation Aggregation Object -- avg, sum, min, max, range, count, first, last, std.p, std.s, var.p, var.s.
-     * Create with `new Aggregation(type,timeBucketinMs)`
+     * Create with `new Aggregation(type,timeBucketinMs)`.
      * @param withLabels Include in the reply the label-value pairs that represent metadata labels of the time-series.
      * If this argument is not set, by default, an empty Array will be replied on the labels array position.
-     * @returns a promise containing an array of multi-range response objects i.e. `{ key: key, labels: Label[], data: Sample[] }`
+     * @returns a promise containing an array of multi-range response objects i.e. `{ key: key, labels: Label[], data: Sample[] }`.
      */
     public async multiRevRange(
         range: TimestampRange,
@@ -479,10 +476,10 @@ export class RedisTimeSeries {
     /**
      * Get the last sample.
      *
-     * Docs: [TS.GET](https://oss.redislabs.com/redistimeseries/commands/#tsget)
+     * Docs: [TS.GET](https://oss.redislabs.com/redistimeseries/commands/#tsget).
      *
-     * @param key Key name for timeseries
-     * @returns the Sample object containing the lastest sample
+     * @param key Key name for timeseries.
+     * @returns the Sample object containing the lastest sample.
      */
     public async get(key: string): Promise<Sample> {
         const params: StringNumberArray = this.director.getKey(key).get();
@@ -495,10 +492,10 @@ export class RedisTimeSeries {
     /**
      * Get the last samples matching the specific filter.
      *
-     * Docs: [TS.MGET](https://oss.redislabs.com/redistimeseries/commands/#tsmget)
+     * Docs: [TS.MGET](https://oss.redislabs.com/redistimeseries/commands/#tsmget).
      *
      * @param filters A filters object. Create with `new FilterBuilder(label, value)`. Chain methods to make more complex filters.
-     * See docs on [filtering](https://oss.redislabs.com/redistimeseries/commands/#filtering)
+     * See docs on [filtering](https://oss.redislabs.com/redistimeseries/commands/#filtering).
      *
      * Examples:
      *
@@ -506,16 +503,16 @@ export class RedisTimeSeries {
      * ```ts
      * const filter = new FilterBuilder("device", "raspberry_23").equal("sensor", "temperature_1");
      * ```
-     * Methods that can be chained: `equal`,`notEqual`, `exists`, `notExists`, `in`, `notIn`
+     * Methods that can be chained: `equal`,`notEqual`, `exists`, `notExists`, `in`, `notIn`.
      *
-     * See README for more examples on filter usage
+     * See README for more examples on filter usage.
      *
      * @param withLabels Include in the reply the label-value pairs that represent metadata labels of the time-series.
      * If this argument is not set, by default, an empty Array will be replied on the labels array position.
-     * @returns An array of Sample objects containing the lastest samples across the specified series
+     * @returns An array of Sample objects containing the lastest samples across the specified series.
      *
      * @remarks
-     * TS.MGET complexity is O(n). n = Number of time-series that match the filters
+     * TS.MGET complexity is O(n). n = Number of time-series that match the filters.
      */
     public async multiGet(filters: FilterBuilder, withLabels?: boolean): Promise<Array<MultiGetResponse>> {
         const params: StringNumberArray = this.director.multiGet(filters, withLabels).get();
@@ -528,14 +525,15 @@ export class RedisTimeSeries {
     /**
      * Returns information and statistics on the time-series.
      *
-     * Docs: [TS.INFO](https://oss.redislabs.com/redistimeseries/commands/#tsinfo)
+     * Docs: [TS.INFO](https://oss.redislabs.com/redistimeseries/commands/#tsinfo).
      *
      * Complexity -- O(1)
      *
      * @param key Key name for timeseries
-     * @returns An object containing information about the timeseries i.e.
+     * @returns An `InfoResponse` object containing information about the timeseries i.e.
      * ```
-     * export interface InfoResponse {
+     * // InfoResponse object
+     * interface InfoResponse {
      *   totalSamples: number;
      *   memoryUsage: number;
      *   firstTimestamp: number;
@@ -561,21 +559,18 @@ export class RedisTimeSeries {
     /**
      * Get all the keys matching the filter list.
      *
-     * Docs: [TS.QUERYINDEX](https://oss.redislabs.com/redistimeseries/commands/#tsqueryindex)
+     * Docs: [TS.QUERYINDEX](https://oss.redislabs.com/redistimeseries/commands/#tsqueryindex).
      *
      * @param filters A filters object. Create with `new FilterBuilder(label, value)`. Chain methods to make more complex filters.
-     * See docs on [filtering](https://oss.redislabs.com/redistimeseries/commands/#filtering)
+     * See docs on [filtering](https://oss.redislabs.com/redistimeseries/commands/#filtering).
      *
-     * Examples:
-     *
-     * Filter timeseries with labels `device=raspberry_23` and `sensor=temperature_1`:
+     * Example:
      * ```ts
+     * // Filter timeseries with labels `device=raspberry_23` and `sensor=temperature_1`:
      * const filter = new FilterBuilder("device", "raspberry_23").equal("sensor", "temperature_1");
      * ```
-     * Methods that can be chained: `equal`,`notEqual`, `exists`, `notExists`, `in`, `notIn`
-     *
-     * See README for more examples on filter usage
-     * @returns An array of keys matching the filters
+     * Methods that can be chained: `equal`,`notEqual`, `exists`, `notExists`, `in`, `notIn`. See README for more examples on filter usage
+     * @returns An array of keys matching the filters.
      */
     public async queryIndex(filters: FilterBuilder): Promise<string[]> {
         const params: StringNumberArray = this.director.queryIndex(filters).get();
@@ -584,14 +579,32 @@ export class RedisTimeSeries {
     }
 
     /**
-     * Delete the specified series
+     * Set a timeout on a Key. After the timeout has expired, the key will automatically be deleted.
+     *
+     * Docs: [EXPIRE](https://redis.io/commands/expire)
+     *
+     * Note: Timeout can be set for a series using redis EXPIRE command when creating the series.
+     *
+     * @param keys The Key of for the series to be expired.
+     * @param seconds The timeout in seconds.
+     * @returns `true` if expiry on Key set successfully. `false` otherwise.
+     */
+    public async expire(key: string, seconds: number): Promise<boolean> {
+        const response = await this.invoker
+            .setCommand(new ExpireCommand(this.provider.getRTSClient(), key, seconds))
+            .run();
+        return response === 1;
+    }
+
+    /**
+     * Delete the specified series.
      *
      * Docs: [TS.DEL](https://oss.redislabs.com/redistimeseries/commands/#del)
      *
      * Note: Timeout can be set for a series using redis EXPIRE command when creating the series.
      *
-     * @param keys An array of Keys for the series to be deleted
-     * @returns `true` if Keys deleted. `false` otherwise
+     * @param keys An array of Keys for the series to be deleted.
+     * @returns `true` if Keys deleted. `false` otherwise.
      */
     public async delete(...keys: string[]): Promise<boolean> {
         const response = await this.invoker.setCommand(new DeleteCommand(this.provider.getRTSClient(), keys)).run();
@@ -599,11 +612,11 @@ export class RedisTimeSeries {
     }
 
     /**
-     * Delete all series
+     * Delete all series.
      *
-     * Note: This is an alias for the ioredis `flushdb()` command
+     * Note: This is an alias for the ioredis `flushdb()` command.
      *
-     * @param keys An array of Keys to be deleted
+     * @param keys An array of Keys to be deleted.
      * @returns `true` if all series deleted.
      */
     public async deleteAll(): Promise<boolean> {
@@ -622,7 +635,7 @@ export class RedisTimeSeries {
      * When set to 0, the series is not trimmed at all
      * @param chunkSize Amount of memory, in bytes, allocated for data. Default: 4000.
      * @param duplicatePolicy Configure what to do on duplicate sample.
-     * https://oss.redislabs.com/redistimeseries/configuration/#DUPLICATE_POLICY
+     * See more on [DUPLICATE_POLICY](https://oss.redislabs.com/redistimeseries/configuration/#DUPLICATE_POLICY)
      *
      * When this is not set, the server-wide default will be used.
      *
