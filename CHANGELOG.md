@@ -1,3 +1,16 @@
+## 1.3.0 - 2021-01-09
+
+- fix missing exported classes: `Count`, `TimestampRange`
+- add missing parameters on `TS.CREATE` -- `chunkSize`, `duplicatepolicy`
+- add missing parameters on `TS.ADD` -- `chunksize`, `onDuplicate`
+- add `TS.REVRANGE` and `TS.MREVRANGE`
+- bump dependencies to latest versions
+- fix vulnerabilities
+- add tests for new changes
+- adds `UNCOMPRESSED` option on `.create()`, .`add()`, .`alter()` methods
+- adds `tsdoc` with usage examples on public classes, functions, enums, interfaces for better intellisense
+- updates `README.md` to reflect the latest changes
+
 ## 1.2.3 - 2020-03-15
 
 - update dependencies
