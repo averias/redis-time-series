@@ -5,6 +5,8 @@ import { Count } from "./entity/count";
 import { TimestampRange } from "./entity/timestampRange";
 import { Aggregation } from "./entity/aggregation";
 import { FilterOperator } from "./enum/filterOperator";
+import { Filter } from "./entity/filter";
+import { List } from "./iterator/list";
 import { AggregationType } from "./enum/aggregationType";
 import { FilterBuilder } from "./builder/filterBuilder";
 import * as Redis from "ioredis";
@@ -18,8 +20,10 @@ export {
     Sample,
     Count,
     TimestampRange,
+    List,
     Aggregation,
     AggregationType,
+    Filter,
     FilterBuilder,
     FilterOperator,
     StringNumberArray,

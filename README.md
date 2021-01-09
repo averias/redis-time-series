@@ -8,9 +8,34 @@
 A Javascript client for [RedisLab/RedisTimeSeries Module](https://oss.redislabs.com/redistimeseries/) implemented in 
 TypeScript and based on [ioredis](https://github.com/luin/ioredis)
 
+- [Redis-Time-Series](#redis-time-series)
+  - [Requirements](#requirements)
+  - [Install](#install)
+  - [Usage](#usage)
+  - [Commands](#commands)
+    - [`.create`](#create)
+    - [`.alter`](#alter)
+    - [`.add`](#add)
+    - [`.multiAdd`](#multiadd)
+    - [`.incrementBy/.decrementBy`](#incrementbydecrementby)
+    - [`.createRule/.deleteRule`](#createruledeleterule)
+    - [`.range/.revRange`](#rangerevrange)
+    - [`.multiRange/multiRevRange`](#multirangemultirevrange)
+    - [`.get`](#get)
+    - [`.multiGet`](#multiget)
+    - [`.queryIndex`](#queryindex)
+    - [`.info`](#info)
+    - [`.expire`](#expire)
+    - [`.delete`](#delete)
+    - [`.deleteAll`](#deleteall)
+    - [`.reset`](#reset)
+    - [`.disconnect`](#disconnect)
+  - [Testing](#testing)
+  - [License](#license)
+
 ## Requirements
 - Redis server 4.0+ version (recommended version 5.0+)
-- RedisTimeSeries Module installed on Redis server as specified in [Build and Run it yoursef](https://oss.redislabs.com/redistimeseries/#build-and-run-it-yourself)
+- RedisTimeSeries Module installed on Redis server as specified in [Build and Run it yourself](https://oss.redislabs.com/redistimeseries/#build-and-run-it-yourself)
 
 
 ## Install
@@ -19,9 +44,11 @@ TypeScript and based on [ioredis](https://github.com/luin/ioredis)
 
 ## Usage
 
-```
-import { Label } from "./entity/label";
-import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
+```ts
+import { 
+    Label, 
+    RedisTimeSeriesFactory 
+} from "redis-time-series-ts";
 
 const example = async () => {
     const factory = new RedisTimeSeriesFactory();
@@ -49,9 +76,11 @@ If no param is provided to `RedisTimeSeries` constructor, it creates `RedsiTimeS
 connection (port: 6379, host: "127.0.0.1" and database: 15). You can specify your connection params by providing an 
 object of `ConnectionOptions` type (an IORedis `RedisOptions` type) which will overwrite those default connection params:
 
-```
-import { ConnectionOptions } from "./index";
-import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
+```ts
+import { 
+    ConnectionOptions, 
+    RedisTimeSeriesFactory 
+} from "redis-time-series-ts";
 
 const options: ConnectionOptions = {
     port: 6381,
@@ -67,22 +96,28 @@ Take a look at the full [list of connections params](https://github.com/luin/ior
 for IORedis.
 
 ## Commands
-After creating a `RedisTimeSeries` from `RedisTimeSeries::create` you can issue the following async commands. 
-All of them return a `Promise` if the command was executed successfully, otherwise, an `Error` will be thrown.
+After creating a `RedisTimeSeries` from `RedisTimeSeries::create` you can issue the following async commands. All of them return a `Promise` if the command was executed successfully, otherwise, an `Error` will be thrown.
 
-### `Create`
+
+### `.create`
 Creates a new time-series with an optional array of labels and optional retention. If the time-series `key` already
 exists, an `Error` will be thrown.
 
-```
+```ts
 redisTimeSeries.create(
     key: string, 
     labels?: Label[], 
     retention?: number, 
     chunkSize?: number,
-    duplicatePolicy?: string
+    duplicatePolicy?: string,
+    uncompressed?: boolean
 ): Promise<boolean>
 ```
+- `retention` -  Maximum age for samples compared to last event time (in milliseconds). Default: The global retention secs configuration of the database (by default, 0 )
+When set to 0, the series is not trimmed at all
+- `chunkSize` - amount of memory, in bytes, allocated for data. Default: 4000.
+- `duplicatePolicy` configures what to do on encounterimg duplicate samples. When this is not set, the server-wide default will be used. See [DUPLICATE_POLICY](https://oss.redislabs.com/redistimeseries/configuration/#DUPLICATE_POLICY) for allowed values.
+- `uncompressed` By default, data are compressed in a time-series, you can revert this behavior by setting `uncompressed` to true
 
 **Label**
 
@@ -96,9 +131,11 @@ True if the time-series was created, otherwise false
 
 **Example**
 
-```
-import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
-import { Label } from "./entity/label";
+```ts
+import { 
+    Label, 
+    RedisTimeSeriesFactory 
+} from "redis-time-series-ts";
 
 const example = async () => {
     const factory = new RedisTimeSeriesFactory();
@@ -122,16 +159,17 @@ example();
 
 More info: [TS.CREATE](https://oss.redislabs.com/redistimeseries/commands/#tscreate)
 
-### `Alter`
+### `.alter`
 Updates the retention and labels of an existing time-series. Same params as `create`.
 
-```
+```ts
 redisTimeSeries.alter(    
     key: string, 
     labels?: Label[], 
     retention?: number, 
     chunkSize?: number,
-    duplicatePolicy?: string
+    duplicatePolicy?: string,
+    uncompressed?: boolean
 ): Promise<boolean>
 ```
 
@@ -145,9 +183,11 @@ True if the time-series was altered, otherwise false
 
 **Example**
 
-```
-import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
-import { Label } from "./entity/label";
+```ts
+import { 
+    Label, 
+    RedisTimeSeriesFactory 
+} from "redis-time-series-ts";
 
 const example = async () => {
     const factory = new RedisTimeSeriesFactory({ port: 6381, db: 15 });
@@ -187,16 +227,17 @@ example();
 
 More info: [TS.ALTER](https://oss.redislabs.com/redistimeseries/commands/#tsalter)
 
-### `Add`
+### `.add`
 Appends, or first creates a time-series and then appends, a new value to the time-series.
 
-```
+```ts
 redisTimeSeries.add(
     sample: Sample, 
     labels?: Label[], 
     retention?: number,
     chunkSize?: number,
-    onDuplicate?: string
+    onDuplicate?: string,
+    uncompressed?: boolean
 ): Promise<number>
 ```
 
@@ -217,10 +258,12 @@ The timestamp value of the sample added
 
 **Example**
 
-```
-import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
-import { Sample } from "./entity/sample";
-import { Label } from "./entity/label";
+```ts
+import { 
+    Label, 
+    Sample, 
+    RedisTimeSeriesFactory 
+} from "redis-time-series-ts";
 
 const example = async () => {
     const factory = new RedisTimeSeriesFactory({ port: 6381, db: 15 });
@@ -279,7 +322,7 @@ example();
 
 More info: [TS.ADD](https://oss.redislabs.com/redistimeseries/commands/#tsadd)
 
-### `MultiAdd`
+### `.multiAdd`
 Similar to `Add` but it appends a list of new values to a time-series, the `key` specified in each sample must exist.
 
 `redisTimeSeries.multiAdd(samples: Sample[]): Promise<(number | MultiAddResponseError)[]>`
@@ -299,11 +342,13 @@ type MultiAddResponseError = {
 
 **Example**
 
-```
-import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
-import { Label } from "./entity/label";
-import { Sample } from "./entity/sample";
-import { FilterBuilder } from "./builder/filterBuilder";
+```ts
+import { 
+    Label, 
+    Sample, 
+    FilterBuilder, 
+    RedisTimeSeriesFactory 
+} from "redis-time-series-ts";
 
 const example = async () => {
     const factory = new RedisTimeSeriesFactory({ port: 6381, db: 15 });
@@ -342,7 +387,7 @@ example();
 More info: [TS.MADD](https://oss.redislabs.com/redistimeseries/commands/#tsmadd)
 
 
-### `incrementBy / decrementBy`
+### `.incrementBy/.decrementBy`
 Increment or decrement the latest value in a time-series
 
 `redisTimeSeries.incrementBy(sample: Sample, labels?: Label[], retention?: number, uncompressed?: boolean): Promise<number>`
@@ -358,10 +403,12 @@ The timestamp value of the sample incremented/decremented
 
 **Example**
 
-```
-import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
-import { Label } from "./entity/label";
-import { Sample } from "./entity/sample";
+```ts
+import { 
+    Label, 
+    Sample, 
+    RedisTimeSeriesFactory 
+} from "redis-time-series-ts";
 
 const example = async () => {
     const factory = new RedisTimeSeriesFactory({ port: 6381, db: 15 });
@@ -398,7 +445,7 @@ example();
 
 More info: [TS.INCRBY / TS.DECRBY](https://oss.redislabs.com/redistimeseries/commands/#tsincrbytsdecrby)
 
-### `CreateRule/DeleteRule`
+### `.createRule/.deleteRule`
 it creates a compaction rule.
 
 `redisTimeSeries.createRule(sourceKey: string, destKey: string, aggregation: Aggregation): Promise<boolean>`
@@ -423,10 +470,12 @@ True if the aggregation rule was created/deleted, otherwise false
 
 **Example**
 
-```
-import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
-import { Aggregation } from "./entity/aggregation";
-import { AggregationType } from "./enum/aggregationType";
+```ts
+import { 
+    Aggregation, 
+    AggregationType, 
+    RedisTimeSeriesFactory 
+} from "redis-time-series-ts";
 
 const example = async () => {
     const factory = new RedisTimeSeriesFactory({ port: 6381, db: 15 });
@@ -466,7 +515,7 @@ More info:
 - [TS.CREATERULE](https://oss.redislabs.com/redistimeseries/commands/#tscreaterule)
 - [TS.DELETERULE](https://oss.redislabs.com/redistimeseries/commands/#tsdeleterule)
 
-### `Range/ RevRange`
+### `.range/.revRange`
 It queries a timestamp range.
 
 `redisTimeSeries.range(key: string, range: TimestampRange, count?: number, aggregation?: Aggregation): Promise<Array<Sample>>`
@@ -491,12 +540,14 @@ An array of samples which represent all the samples included in the query
 
 **Example**
 
-```
-import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
-import { Sample } from "./entity/sample";
-import { Aggregation } from "./entity/aggregation";
-import { AggregationType } from "./enum/aggregationType";
-import { TimestampRange } from "./entity/timestampRange";
+```ts
+import { 
+    TimestampRange, 
+    AggregationType, 
+    Aggregation, 
+    Sample, 
+    RedisTimeSeriesFactory 
+} from "redis-time-series-ts";
 
 const example = async () => {
     const factory = new RedisTimeSeriesFactory({ port: 6381, db: 15 });
@@ -525,9 +576,9 @@ const example = async () => {
 example();
 ```
 
-More info: [TS.RANGE](https://oss.redislabs.com/redistimeseries/commands/#tsrange)
+More info: [TS.RANGE/TS.REVRANGE](https://oss.redislabs.com/redistimeseries/commands/#tsrangetsrevrange)
 
-### `MultiRange/MultiRevRange`
+### `.multiRange/multiRevRange`
 It queries a timestamp range across multiple time-series by using filters.
 
 `redisTimeSeries.multiRange(range: TimestampRange, filters: FilterBuilder, count?: number, aggregation?: Aggregation, withLabels?: boolean): Promise<Array<MultiRangeResponse>>`
@@ -572,14 +623,16 @@ timestamp found in the time-series which will be equel to 0 if the time-series h
 
 **Example**
 
-```
-import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
-import { Label } from "./entity/label";
-import { Sample } from "./entity/sample";
-import { Aggregation } from "./entity/aggregation";
-import { AggregationType } from "./enum/aggregationType";
-import { TimestampRange } from "./entity/timestampRange";
-import { FilterBuilder } from "./builder/filterBuilder";
+```ts
+import { 
+    Label, 
+    Sample, 
+    Aggregation, 
+    AggregationType, 
+    TimestampRange, 
+    FilterBuilder, 
+    RedisTimeSeriesFactory 
+} from "redis-time-series-ts";
 
 const example = async () => {
     const factory = new RedisTimeSeriesFactory({ port: 6381, db: 15 });
@@ -602,7 +655,6 @@ const example = async () => {
     const timestampRange = new TimestampRange(date, date + 10000);
     const filter = new FilterBuilder("label", 1).equal("sensor", 1);
     const multiRanges = await redisTimeSeries.multiRange(timestampRange, filter, undefined, aggregation, true);
-
     const multiRange = multiRanges.shift();
     
     console.log(multiRange.key); //multirange1
@@ -614,10 +666,8 @@ const example = async () => {
     
     const samples = multiRange.data;
     
-    console.log(samples.shift().getValue()); // 24
-    
+    console.log(samples.shift().getValue()); // 24  
     console.log(samples.shift().getValue()); // 29;
-
     console.log(multiRanges.length); // 0
 
     await redisTimeSeries.delete("range1");
@@ -627,9 +677,9 @@ const example = async () => {
 example();
 ```
 
-More info: [TS.MULTIRANGE](https://oss.redislabs.com/redistimeseries/commands/#tsmrange)
+More info: [TS.MRANGE/TS.MREVRANGE](https://oss.redislabs.com/redistimeseries/commands/#tsmrangetsmrevrange)
 
-### `Get`
+### `.get`
 Get the last sample from an existing time-series.
 
 `redisTimeSeries.get(key: string): Promise<Sample>`
@@ -640,9 +690,11 @@ The last sample in the time-series specified by `key`
 
 **Example**
 
-```
-import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
-import { Sample } from "./entity/sample";
+```ts
+import { 
+    Sample, 
+    RedisTimeSeriesFactory 
+} from "redis-time-series-ts";
 
 const example = async () => {
     const factory = new RedisTimeSeriesFactory({ port: 6381, db: 15 });
@@ -666,7 +718,7 @@ example();
 
 More info: [TS.GET](https://oss.redislabs.com/redistimeseries/commands/#tsget)
 
-### `MultiGet`
+### `.multiGet`
 Gets the last samples matching the specific filter.
 
 `redisTimeSeries.multiGet(filters: FilterBuilder): Promise<Array<MultiGetResponse>>`
@@ -692,11 +744,13 @@ sample with value = 0 and timestamp = 0;
 
 **Example**
 
-```
-import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
-import { Label } from "./entity/label";
-import { Sample } from "./entity/sample";
-import { FilterBuilder } from "./builder/filterBuilder";
+```ts
+import { 
+    FilterBuilder, 
+    Sample, 
+    Label, 
+    RedisTimeSeriesFactory 
+} from "redis-time-series-ts";
 
 const example = async () => {
     const factory = new RedisTimeSeriesFactory({ port: 6381, db: 15 });
@@ -751,7 +805,7 @@ example();
 
 More info: [TS.MULTIGET](https://oss.redislabs.com/redistimeseries/commands/#tsmget)
 
-### `QueryIndex`
+### `.queryIndex`
 Get all time-series keys matching the filter list.
 
 `redisTimeSeries.mueryIndex(filters: FilterBuilder): Promise<string[]>`
@@ -764,11 +818,13 @@ An array of time-series keys
 
 **Example**
 
-```
-import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
-import { Label } from "./entity/label";
-import { Sample } from "./entity/sample";
-import { FilterBuilder } from "./builder/filterBuilder";
+```ts
+import { 
+    Label, 
+    Sample, 
+    FilterBuilder, 
+    RedisTimeSeriesFactory 
+} from "redis-time-series-ts";
 
 const example = async () => {
     const factory = new RedisTimeSeriesFactory({ port: 6381, db: 15 });
@@ -803,7 +859,7 @@ example();
 
 More info: [TS.QUERYINDEX](https://oss.redislabs.com/redistimeseries/commands/#tsqueryindex)
 
-### `Info`
+### `.info`
 Returns information and statistics a time-series specified by `key`.
 
 `redisTimeSeries.info(key: string): Promise<InfoResponse>`
@@ -812,7 +868,7 @@ Returns information and statistics a time-series specified by `key`.
 
 An `InfoResponse` object
 
-```
+```ts
 interface InfoResponse {
     totalSamples: number;
     memoryUsage: number;
@@ -835,10 +891,12 @@ interface AggregationByKey {
 
 **Example**
 
-```
-import { RedisTimeSeriesFactory } from "./factory/redisTimeSeries";
-import { Label } from "./entity/label";
-import { Sample } from "./entity/sample";
+```ts
+import { 
+    Label, 
+    Sample, 
+    RedisTimeSeriesFactory 
+} from "redis-time-series-ts";
 
 const example = async () => {
     const factory = new RedisTimeSeriesFactory({ port: 6381, db: 15 });
@@ -872,7 +930,13 @@ example();
 
 More info: [TS.INFO](https://oss.redislabs.com/redistimeseries/commands/#tsinfo)
 
-### `Delete`
+### `.expire`
+Expires a time-series `key` by using Redis `expire` command.
+
+`redisTimeSeries.expire(key: string, seconds: number): Promise<boolean>`
+- `seconds` must be an integer or an exception will be thrown
+
+### `.delete`
 Deletes a time-series `key` by using Redis `del` command.
 
 `redisTimeSeries.delete(key: string): Promise<boolean>`
@@ -881,7 +945,7 @@ Deletes a time-series `key` by using Redis `del` command.
 
 It returns `true` if the key was deleted successfully, otherwise `false`.
 
-### `DeleteAll`
+### `.deleteAll`
 Deletes all keys in the current Redis database by using Redis `flushdb` command.
 
 `redisTimeSeries.deleteAll(): Promise<boolean>`
@@ -890,7 +954,7 @@ Deletes all keys in the current Redis database by using Redis `flushdb` command.
 
 It returns `true` if all keys were deleted successfully, otherwise `false`.
 
-### `Reset`
+### `.reset`
 Resets a time-series `key` by deleting and then recreating the time-series with the labels and retention specified, if any.
 
 `redisTimeSeries.reset(key: string, labels?: Label[], retention?: number): Promise<boolean>`
@@ -900,7 +964,7 @@ Resets a time-series `key` by deleting and then recreating the time-series with 
 It returns `true` if `key` was created successfully, otherwise `false`. If `key` doesn't exist or could not be deleted and 
 error is thrown.
 
-### `Disconnect`
+### `.disconnect`
 Disconnects the `RedisTimeSeries` client from Redis server.
 
 `redisTimeSeries.disconnect(): Promise<boolean>`
@@ -910,7 +974,7 @@ Disconnects the `RedisTimeSeries` client from Redis server.
 It returns `true` if the client was disconnected successfully, otherwise `false`.
 
 
-## Test
+## Testing
 Tests can be run locally with docker. `docker.compose.yml` file will build two services:
 - redis-time-series: node container with the source code and all dependent packages installed, where you can run the tests from
 - redislabs-redistimeseries: redis container built from `redislabs/redistimeseries:latest` image
@@ -922,5 +986,5 @@ You can follow these steps to build the Docker services and run the tests:
 
 
 ## License
-Redis-time-series code is distributed under MIT license, see [LICENSE](https://github.com/averias/redis-time-series/blob/master/LICENSE) 
+Redis-time-series code is distributed under MIT license, see [LICENSE](https://github.com/emmanuelnk/redis-time-series/blob/master/LICENSE) 
 file

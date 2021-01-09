@@ -1,10 +1,32 @@
 import { CommandKeyword } from "../enum/commandKeyword";
 import { StringNumberArray } from "../index";
 
+/**
+ * A `from` - `to` timestamp object
+ */
 export class TimestampRange {
     private from: string | number;
     private to: string | number;
 
+    /**
+     *  Creates a timestamp range object
+     *
+     * @param from timestamp to begin from (milliseconds)
+     * @param to timestamp to end at (milliseconds)
+     *
+     * @remarks
+     * ```
+     *     // Example
+     *     const oneDayAgo = new Date().getTime() - 24 * 3600 * 1000
+     *     const now = new Date().getTime()
+     *     const tsRange = new TimestampRange(oneDayAgo, now)
+     *     tsRange.getFrom() // oneDayAgo
+     *     tsRange.getTo() // now
+     *     tsRange.setFrom(oneDayAgo - 24 * 3600 * 1000) // twoDaysAgo
+     *     tsRange.getTo(oneDayAgo) // oneDayAgo
+     *     tsRange.flatten() // [twoDaysAgo, oneDayAgo]
+     * ```
+     */
     constructor(from?: number, to?: number) {
         this.setFrom(from);
         this.setTo(to);

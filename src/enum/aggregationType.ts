@@ -1,3 +1,10 @@
+/**
+ * The type of aggregation to be executed
+ *
+ * Types:
+ *
+ * AVG, SUM, MIN, MAX, RANGE, COUNT, FIRST, LAST, STD_P, STD_S, VAR_P, VAR_S
+ */
 export enum AggregationType {
     AVG = "avg",
     SUM = "sum",

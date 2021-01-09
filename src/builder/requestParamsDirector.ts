@@ -17,11 +17,13 @@ class RequestParamsDirector {
         labels?: Label[],
         retention?: number,
         chunkSize?: number,
-        duplicatePolicy?: string
+        duplicatePolicy?: string,
+        uncompressed?: boolean
     ): RequestParamsBuilder {
         return this.paramsBuilder
             .addKey(key)
             .addRetention(retention)
+            .addUncompressed(uncompressed)
             .addLabels(labels)
             .addChunkSize(chunkSize)
             .addDuplicatePolicy(duplicatePolicy);
@@ -32,11 +34,13 @@ class RequestParamsDirector {
         labels?: Label[],
         retention?: number,
         chunkSize?: number,
-        duplicatePolicy?: string
+        duplicatePolicy?: string,
+        uncompressed?: boolean
     ): RequestParamsBuilder {
         const builder = this.paramsBuilder
             .addKey(key)
             .addRetention(retention)
+            .addUncompressed(uncompressed)
             .addChunkSize(chunkSize)
             .addDuplicatePolicy(duplicatePolicy);
         // if labels is an empty array it means deleting previous labels
@@ -52,11 +56,13 @@ class RequestParamsDirector {
         labels?: Label[],
         retention?: number,
         chunkSize?: number,
-        onDuplicate?: string
+        onDuplicate?: string,
+        uncompressed?: boolean
     ): RequestParamsBuilder {
         return this.paramsBuilder
             .addSample(sample)
             .addRetention(retention)
+            .addUncompressed(uncompressed)
             .addLabels(labels)
             .addChunkSize(chunkSize)
             .addOnDuplicate(onDuplicate);
